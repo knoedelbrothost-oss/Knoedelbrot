@@ -1,7 +1,7 @@
 function getCookie(name) {
     const value = "; " + document.cookie;
     const parts = value.split("; " + name + "=");
-    if(parts.length === 2) return parts.pop().split(";").shift();
+    if (parts.length === 2) return parts.pop().split(";").shift();
     return null;
 }
 
@@ -9,17 +9,29 @@ function deleteCookie(name) {
     document.cookie = name + '=; Max-Age=0; path=/';
 }
 
+function bonusAvailable() {
+    if (getCookie("bonus") === "1") {
+        document.getElementById("bonus").style.display = "block";
+        document.getElementById("normal").style.display = "none";
+    } else {
+        document.getElementById("bonus").style.display = "none";
+        document.getElementById("normal").style.display = "block";
+
+    }
+}
+
 function initHeader() {
     const loginLink = document.getElementById("loginLink");
 
-    if(!loginLink) return;
+
+    if (!loginLink) return;
 
     const loginStatus = getCookie("login");
 
-    if(loginStatus === "1") {
+    if (loginStatus === "1") {
         // Wenn angemeldet: Login zu Logout
         loginLink.textContent = "Logout";
-        loginLink.addEventListener("click", function(e){
+        loginLink.addEventListener("click", function (e) {
             e.preventDefault();
             deleteCookie("login");
             deleteCookie("bonus");
@@ -29,7 +41,7 @@ function initHeader() {
     } else {
         // Wenn nicht angemeldet: normaler Login-Link
         loginLink.textContent = "Login";
-        loginLink.addEventListener("click", function(e){
+        loginLink.addEventListener("click", function (e) {
             e.preventDefault();
             localStorage.setItem("redirectAfterLogin", window.location.href);
             window.location.href = "login.html";
@@ -39,7 +51,7 @@ function initHeader() {
     // Mobile Menü Toggle
     const menuToggle = document.querySelector('.menu-toggle');
     const menu = document.getElementById('menu');
-    menuToggle.addEventListener("click", function(){
+    menuToggle.addEventListener("click", function () {
         menu.classList.toggle("active");
     });
 }
