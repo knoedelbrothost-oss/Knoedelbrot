@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="5; url=https://neocities.org/signin">
+    <title>Hostzugriff</title>
+    <style>
+    #timer {
+      font-size: 2em;
+      color: darkblue;
+    }
+    #done {
+      display: none;
+      font-size: 2em;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+    <div id="timer">Sie werden in 5 Sekunden weitergeleitet!</div>
+  <div id="done">🔔 Hat es nicht funktioniert? Klicke <a href="https://neocities.org/signin">hier</a>!</div>
+
+  <script>
+    let sekunden = 5;
+    const timerAnzeige = document.getElementById("timer");
+    const fertigAnzeige = document.getElementById("done");
+
+    const countdown = setInterval(function() {
+      sekunden--;
+      if (sekunden > 0) {
+        timerAnzeige.textContent = "Sie werden in " + sekunden + " Sekunden weitergeleitet!";
+      } else {
+        clearInterval(countdown); // Countdown stoppen
+        timerAnzeige.style.display = "none"; // Countdown ausblenden
+        fertigAnzeige.style.display = "block"; // Hinweis anzeigen
+      }
+    }, 1000); // Alle 1000 Millisekunden = 1 Sekunde
+  </script>
+</body>
+</html>

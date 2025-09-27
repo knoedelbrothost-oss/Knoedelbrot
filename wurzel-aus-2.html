@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>√2</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #111;
+            color: #0f0;
+            font-size: 1.2em;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #sqrt2 {
+            word-break: break-all;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        button {
+            font-size: 1em;
+            padding: 5px 10px;
+            background: #0f0;
+            color: #111;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #0c0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>√2 berechnen</h1>
+
+    <div id="controls">
+        <div>Nachkommastellen: <span id="count">0</span></div>
+        <button id="copyBtn">In Zwischenablage kopieren</button>
+    </div>
+
+    <div id="sqrt2">1.</div>
+    <button id="stopBtn" style="margin-top:10px;">Stop</button>
+    <a id="back" href="maths.html" style="display:none;"><button>Maths</button></a>
+    <a href="wurzel-aus-2-schnell.html"><button>Beschleunigen (Bonusprogramm)</button></a>
+    <script>
+        const out = document.getElementById("sqrt2");
+        const copyBtn = document.getElementById("copyBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const countDisplay = document.getElementById("count");
+
+        let running = true;
+        let totalDigits = 0;
+
+        // Digit-by-digit Algorithmus für Quadratwurzeln (ähnlich wie schriftliches Wurzelziehen)
+        let remainder = 0n;
+        let root = 0n;
+        let divisor = 0n;
+        let num = 2n; // wir ziehen die Wurzel aus 2
+        let scale = 0n;
+
+        function nextSqrtDigit() {
+            if (!running) return;
+
+            remainder = remainder * 100n;
+            if (scale === 0n) {
+                remainder = num;
+                scale = 1n;
+            }
+
+            let candidate = root * 20n;
+            let x = 0n;
+            for (let d = 9n; d >= 0n; d--) {
+                if ((candidate + d) * d <= remainder) {
+                    x = d;
+                    break;
+                }
+            }
+
+            remainder -= (candidate + x) * x;
+            root = root * 10n + x;
+
+            out.textContent += x.toString();
+            totalDigits++;
+            countDisplay.textContent = totalDigits;
+            out.scrollTop = out.scrollHeight;
+
+            setTimeout(nextSqrtDigit, 200);
+        }
+
+        copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(out.textContent).then(() => {
+                alert("√2 in die Zwischenablage kopiert!");
+            }).catch(err => alert("Fehler beim Kopieren: " + err));
+        });
+
+        stopBtn.addEventListener("click", () => {
+            document.getElementById("back").style.display = "inline-block";
+            document.getElementById("stopBtn").style.display = "none";
+            running = false;
+        });
+
+        nextSqrtDigit();
+    </script>
+</body>
+
+</html>

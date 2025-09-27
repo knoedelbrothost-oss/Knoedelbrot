@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Knödelbrot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="Logo.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="Logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Pacifico&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: "DynaPuff", system-ui;
+      font-optical-sizing: auto;
+      font-size: 20px;
+      font-weight: <weight>;
+      font-style: normal;
+      font-variation-settings:
+        "wdth" 100;
+    }
+
+    .center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-family: "Pacifico", cursive;
+      font-style: normal;
+      color: black;
+      font-size: 46px;
+      text-align: center;
+    }
+
+    h2 {
+      font-family: "Pacifico"
+    }
+
+    button {
+      color: white;
+      background-color: black;
+      font-family: "DynaPuff", system-ui;
+      font-optical-sizing: auto;
+      font-size: 20px;
+      font-weight: <weight>;
+      font-style: normal;
+      font-variation-settings:
+        display: inline-block;
+      border: none;
+      border-radius: 90px;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      transition-duration: 0.4s;
+    }
+
+    button:hover {
+      background-color: rgb(125, 125, 125);
+      color: black;
+
+    }
+
+    hr {
+      border-color: none;
+      border-radius: 0px;
+      height: 3px;
+      background-color: black;
+    }
+
+    .container {
+      display: flex;
+    }
+
+    .box {
+      flex: 1;
+      margin: 5px;
+      padding: 20px;
+      border-radius: 90px;
+      background-color: black;
+      text-align: center;
+      color: whitesmoke;
+    }
+
+    .box:hover {
+      background-color: rgb(119, 119, 119);
+      color: black;
+    }
+
+    .prinzipien {
+      width: 50%;
+      border-radius: 90px;
+      -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 70%);
+      mask-image: radial-gradient(circle, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 70%);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .klein {
+      display: none;
+    }
+
+    .stapel {
+      width: 100%;
+      overflow: hidden;
+      border: none;
+      position: relative;
+      height: 450px;
+    }
+
+    .slider {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: transform 0.5s ease;
+    }
+
+    .slide {
+      min-width: 100%;
+      border: none;
+      height: 100%;
+      text-align: center;
+      font-size: 10;
+    }
+
+
+
+    @media (max-width: 600px) {
+      body {
+        font-size: 10px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      h2 {
+        font-size: 15px;
+      }
+
+      button {
+        font-size: 10px;
+      }
+
+      .groß {
+        display: none;
+      }
+
+      .klein {
+        display: initial;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header-placeholder"></div>
+
+  <script>
+    // Header laden
+    fetch("header.html")
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById("header-placeholder").innerHTML = html;
+        initHeader(); // ganz wichtig: erst nach dem Einfügen aufrufen
+      });
+
+    function initHeader() {
+      const header = document.getElementById("header-placeholder");
+      const loginStatus = document.cookie.includes("login=1");
+      const link = header.querySelector("#loginLink");
+
+      if (loginStatus) {
+        link.textContent = "Profil";
+        link.href = "profile.html";
+      } else {
+        link.textContent = "Login";
+        link.href = "login.html";
+      }
+    }
+  </script>
+
+
+
+
+  <div>
+    <!-- <h1>Rock the Knödelbrotfestival</h1>
+    <p class="center"> Bald ist es so weit!<br>Die Knödelbrot Festspiele sind da!</p>
+    <a href="festival.html" class="center"><button>Learn more</button></a>
+  </div>
+  <br>
+  <br>
+  <hr>
+  <br>
+  <br>
+  <div>
+    <h1>Es gibt jetzt eine Knödelbrot Hymne!</h1>
+    <br>
+    <a href="https://suno.com/@knoedelbrot" class="center"><button>Entdecke sie jetzt!</button></a>
+  </div>
+  <br>
+  <br>
+  <hr>
+  <br>
+  <br>
+  <div>
+    <h1>Lies die Knödelbrot-Magazine um nur 2€/Monat oder 20€/Jahr</h1>
+    <a href="magazin.html" class="center"><button>Los gehts!</button></a>
+  </div>  
+  <br>
+  <br>
+  <hr>
+  <br>
+  <br> -->
+    <div>
+      <h1>Werde ein Knödelbrotpartner</h1>
+      <a href="partner.html" class="center"><button>Mache mit!</button></a>
+    </div>
+    <br>
+    <br>
+    <hr>
+    <br>
+    <br>
+    <div class="groß">
+      <h1>Unsere Prinzipien</h1>
+      <div class="container">
+        <div class="box"> <img src="Ehrlichkeit.jpg" class="prinzipien">
+          <h2>Ehrlichkeit</h2> <br> Die Firma Knödelbrot schätzt die Ehrlichkeit und möchte so wie jeder individueller
+          Mensch in einer möglichst ehrlichen Welt leben.
+        </div>
+        <div class="box"> <img src="Umweltbewusstsein.jpg" class="prinzipien">
+          <h2>Umweltbewusstsein</h2> Die Firma Knödelbrot verwendet nur regionale Produkte und bei Lebensmitteln nur Bio
+          und saisonale Produkte. Außerdem wird auf möglichst kurze Transportwege geachtet.
+        </div>
+      </div>
+      <div class="container">
+        <div class="box"> <img src="Menschenrechte.jpg" class="prinzipien">
+          <h2>Menschenrechte</h2> <br> Die Firma Knödelbrot bemüht sich seit Anfang an faire Arbeitsbedingungen und
+          schwierige Arbeiten Robotern zu überlassen. Die <a
+            href="https://www.menschenrechte.jugendnetz.de/">Menschenrechte</a> werden strikt eingehalten.
+        </div>
+        <div class="box"> <img src="Pressefreiheit.jpg" class="prinzipien">
+          <h2>Pressefreiheit</h2> Die Firma Knödelbrot formt die Artikel in ihrem Magazin auf keinste weise und bezahlt
+          keine Nachrichtenunternehmen.
+        </div>
+      </div>
+    </div>
+    <div class="klein">
+      <div class="stapel">
+        <div class="slider" id="slider">
+          <div class="slide" style="background-color: green; font-size: 10;"><img src="Ehrlichkeit.jpg"
+              class="prinzipien">
+            <h2>Ehrlichkeit</h2> <br>
+            <p style=" font-size: 10;">Die Firma Knödelbrot schätzt die Ehrlichkeit und möchte so wie jeder
+              individueller
+              Mensch in einer möglichst ehrlichen Welt leben.</p>
+          </div>
+          <div class="slide" style="background-color: lightgreen; font-size: 10;"><img src="Umweltbewusstsein.jpg"
+              class="prinzipien">
+            <h2>Umweltbewusstsein</h2>
+            <p style=" font-size: 10;">Die Firma Knödelbrot verwendet nur regionale Produkte und bei Lebensmitteln nur
+              Bio
+              und saisonale Produkte. Außerdem wird auf möglichst kurze Transportwege geachtet.</p>
+          </div>
+          <div class="slide" style="background-color: green; font-size: 10;"><img src="Menschenrechte.jpg"
+              class="prinzipien">
+            <h2>Menschenrechte</h2> <br>
+            <p style=" font-size: 10;">Die Firma Knödelbrot bemüht sich seit Anfang an faire Arbeitsbedingungen und
+              schwierige Arbeite Robotern zu überlassen. Die Menschenrechte werden strikt eingehalten.</p>
+          </div>
+          <div class="slide" style="background-color: lightgreen; font-size: 10; "><img src="Pressefreiheit.jpg"
+              class="prinzipien">
+            <h2>Pressefreiheit</h2>
+            <p style=" font-size: 10;">Die Firma Knödelbrot formt die Artikel in ihrem Magazin auf keinste weise und
+              bezahlt
+              keine Nachrichtenunternehmen.</p>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="center">
+        <button onclick="prev()">← Zurück</button>
+        <button onclick="next()">Weiter →</button>
+      </div>
+    </div>
+    <script>
+      const slider = document.getElementById("slider");
+      const slides = document.querySelectorAll(".slide");
+      let current = 0;
+
+      function updateSlider() {
+        slider.style.transform = `translateX(-${current * 100}%)`;
+      }
+
+      function next() {
+        current = (current + 1) % slides.length;
+        updateSlider();
+      }
+
+      function prev() {
+        current = (current - 1 + slides.length) % slides.length;
+        updateSlider();
+      }
+
+      let startX = 0;
+      slider.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+      slider.addEventListener("touchend", e => {
+        let diff = e.changedTouches[0].clientX - startX;
+        if (Math.abs(diff) > 50) {
+          diff > 0 ? prev() : next();
+        }
+      });
+    </script>
+  </div>
+  <br>
+  <br>
+  <hr>
+  <br>
+  <br>
+  <div>
+    <h1>Work with us!</h1>
+    <iframe
+      src="https://docs.google.com/forms/d/e/1FAIpQLSfTiJxtYFW4DApb2BEx1dM9VnJISOScXeWB6JcF9Gk6D1FEgg/viewform?embedded=true"
+      width="100%" height="1300" frameborder="0" marginheight="0" marginwidth="0">Wird geladen…</iframe>
+  </div>
+  <br>
+  <br>
+  <hr>
+  <br>
+  <br>
+  <div>
+    <h1 style="text-align: left;">
+      <ul style="list-style-type:none">
+        <li>Mitarbeiter:</li>
+      </ul>
+    </h1>
+    <ul style="list-style-type:disc">
+      <li>
+        <p>Niklas Awecker (Inhaber; Präsident)</p>
+      </li>
+      <li>
+        <p>Ilja Schnell (Chef der Mediengestaltung)</p>
+      </li>
+      <li>
+        <p>Nina Knödlinger (Vizepräsident)</p>
+      </li>
+      <li>
+        <p>Uwe Knusprig (Stv. Vizepräsident)</p>
+      </li>
+      <li>
+        <p>Anna Müller (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Maximilian Schmidt (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Sophia Wagner (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Lukas Becker (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Emilia Fischer (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Leon Meyer (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Marie Weber (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Elias Schneider (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Lina Hoffmann (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Paul Bauer (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Emma Johnson (Standortleiter)</p>
+      </li>
+      <li>
+        <p>William Brown (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Olivia Davis (Standortleiter)</p>
+      </li>
+      <li>
+        <p>James Wilson (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Charlotte Taylor (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Benjamin Anderson (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Mia Thomas (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Alexander Moore (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Harper Martin (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Henry Lee (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Carlos García (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Yuki Kanada (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Aisha Ahmed (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Viktor Ivanov (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Clara Neumann (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Jonas Berger (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Laura Klein (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Tobias Vogel (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Julia Frank (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Niklas Böhm (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Hannah Köhler (Standortleiter)</p>
+      </li>
+      <li>
+        <p>David Winter (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Amelie Schwarz (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Philipp Krämer (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Lisa Braun (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Fabian König (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Johanna Langer (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Florian Busch (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Sarah Günther (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Markus Peters (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Lena Wolf (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Isabella Rossi (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Sofia Santos (Standortleiter)</p>
+      </li>
+      <li>
+        <p>Arjun Patel (Standortleiter)</p>
+      </li>
+
+    </ul>
+  </div>
+</body>
+
+</html>

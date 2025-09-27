@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Cookie-Banner DSGVO</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f4f4f9;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    /* Banner-Styling */
+    #cookie-banner {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      max-width: 350px;
+      background: #2c2c2c;
+      color: white;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      font-size: 14px;
+      line-height: 1.4em;
+      z-index: 1000;
+    }
+
+    #cookie-banner p {
+      margin: 0 0 10px;
+    }
+
+    #cookie-banner button {
+      margin: 5px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    #accept-btn {
+      background: #4caf50;
+      color: white;
+    }
+    #accept-btn:hover {
+      background: #45a049;
+    }
+
+    #decline-btn {
+      background: #f44336;
+      color: white;
+    }
+    #decline-btn:hover {
+      background: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Beispielseite mit Cookie-Banner</h1>
+
+  <!-- Cookie-Banner -->
+  <div id="cookie-banner">
+    <p>Diese Website verwendet Cookies, um dein Erlebnis zu verbessern. 
+       Du kannst zustimmen oder ablehnen.</p>
+    <button id="accept-btn" onclick="acceptCookies()">Akzeptieren</button>
+    <button id="decline-btn" onclick="declineCookies()">Ablehnen</button>
+  </div>
+
+  <script>
+    // Cookie setzen
+    function setCookie(name, value, days) {
+      let d = new Date();
+      d.setTime(d.getTime() + (days*24*60*60*1000));
+      let expires = "expires=" + d.toUTCString();
+      document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    // Cookie auslesen
+    function getCookie(name) {
+      let cname = name + "=";
+      let decodedCookie = decodeURIComponent(document.cookie);
+      let ca = decodedCookie.split(';');
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(cname) === 0) {
+          return c.substring(cname.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    // Akzeptieren
+    function acceptCookies() {
+      setCookie("cookieConsent", "accepted", 365);
+      document.getElementById("cookie-banner").style.display = "none";
+      // Beispiel: Tracking/Analytics starten
+      console.log("Cookies akzeptiert hier könntest du Google Analytics starten.");
+    }
+
+    // Ablehnen
+    function declineCookies() {
+      setCookie("cookieConsent", "declined", 365);
+      document.getElementById("cookie-banner").style.display = "none";
+      console.log("Cookies abgelehnt keine Tracking-Skripte geladen.");
+    }
+
+    // Prüfen, ob schon gewählt
+    window.onload = function() {
+      let consent = getCookie("cookieConsent");
+      if (consent === "accepted" || consent === "declined") {
+        document.getElementById("cookie-banner").style.display = "none";
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Partner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="Logo.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="Logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: "DynaPuff", system-ui;
+            font-optical-sizing: auto;
+            font-size: 20px;
+            font-weight: <weight>;
+            font-style: normal;
+            font-variation-settings:
+                "wdth" 100;
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .button {
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+
+        .button1 {
+            background-color: white;
+            color: black;
+            border: 2px solid #04AA6D;
+        }
+
+        .button1:hover {
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        .button2 {
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        .button2:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #04AA6D;
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: "Pacifico", cursive;
+            font-style: normal;
+            color: green;
+            font-size: 46px;
+            text-align: center;
+        }
+
+        h2 {
+            font-family: "Pacifico"
+        }
+
+        button {
+            color: black;
+            font-family: "DynaPuff", system-ui;
+            font-optical-sizing: auto;
+            font-size: 20px;
+            font-weight: <weight>;
+            font-style: normal;
+            font-variation-settings:
+                display: inline-block;
+            border: none;
+            border-radius: 90px;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            background-color: rgb(0, 173, 0);
+            font-size: 20px;
+            transition-duration: 0.4s;
+        }
+
+        button:hover {
+            background-color: rgba(0, 173, 0, 0.363);
+            color: black;
+
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .box {
+            flex: 1;
+            margin: 5px;
+            padding: 20px;
+            border-radius: 90px;
+            background-color: none;
+            text-align: center;
+        }
+
+        .box:hover {
+            background-color: rgba(110, 110, 110, 0.5);
+            color: black;
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 10px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+
+            h2 {
+                font-size: 15px;
+            }
+
+            button {
+                font-size: 10px;
+            }
+
+            .groß {
+                display: none;
+            }
+
+            .klein {
+                display: initial;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <script>
+        // Header laden
+        fetch("header.html")
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("header-placeholder").innerHTML = html;
+                initHeader(); // ganz wichtig: erst nach dem Einfügen aufrufen
+            });
+
+        function initHeader() {
+            const header = document.getElementById("header-placeholder");
+            const loginStatus = document.cookie.includes("login=1");
+            const link = header.querySelector("#loginLink");
+
+            if (loginStatus) {
+                link.textContent = "Profil";
+                link.href = "profile.html";
+            } else {
+                link.textContent = "Login";
+                link.href = "login.html";
+            }
+        }
+    </script>
+
+
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="container">
+        <a href="https://www.youtube.com/@YTMagnus_Eis" target="_blank" class="center" style="width: 50%;">
+            <div class="box"><img src="magnus_eis.png">
+                <h2>Magnus Eis</h2>
+            </div>
+        </a>
+        <div class="box center" style="width: 50%;">
+            <h2 style="padding-top: 50px;">Linus Mark Energetic GMBH</h2>
+        </div>
+    </div>
+    <div class="container">
+        <a href="studios/index.html" target="_blank" class="center" style="width: 50%;">
+            <div class="box"><img src="knödelbrot studios.png" style="width: 50%;">
+                <h2>KnödelBrot Studios</h2>
+            </div>
+        </a>
+        <a href="https://bio-ei.jimdosite.com/" target="_blank" class="center" style="width: 50%;">
+            <div class="box"><img src="Bio-Ei-Logo.png" style="width: 50%;">
+                <h2>Bio-Ei</h2>
+            </div>
+        </a>
+    </div>
+    <div class="container">
+        <div>
+            <h1>Willst du ein Partner von Knödelbrot werden?</h1>
+            <iframe
+                src="https://docs.google.com/forms/d/e/1FAIpQLSc2-NGaJlJU65zFV_G9KcGbhxCKNtEylqLk2GyTEi7vegQobg/viewform?embedded=true"
+                width="100%" height="1100" frameborder="0" marginheight="0" marginwidth="0">Wird geladen…</iframe>
+        </div>
+    </div>
+</body>
+
+</html>

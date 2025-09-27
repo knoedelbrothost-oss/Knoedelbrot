@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pi Schnell</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #111;
+            color: #0f0;
+            font-size: 1.2em;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #pi {
+            word-break: break-all;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        button {
+            font-size: 1em;
+            padding: 5px 10px;
+            background: #0f0;
+            color: #111;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #0c0;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        if (getCookie('login') !== '1') {
+            localStorage.setItem("redirectAfterLogin", window.location.href);
+            window.location.href = "login.html";
+        }
+        else if (getCookie('bonus') !== '1') {
+            alert("Du hast leider keinen Zugriff auf diese Seite. Bitte melde dich mit einem Bonus-Account an.");
+        }
+    </script>
+    <div id="content-wrapper" style="display: block;">
+        <h1>π berechnen (extrem schnell)</h1>
+        <div id="controls">
+            <div>Nachkommastellen: <span id="count">0</span></div>
+            <button id="copyBtn">In Zwischenablage kopieren</button>
+        </div>
+        <div id="pi">3.</div>
+        <button id="stopBtn" style="margin-top:10px;">Stop</button>
+        <a id="back" href="maths.html" style="display:none;"><button>Maths</button></a>
+    </div>
+
+    <script>
+        // Spigot-Algorithmus für Pi
+        const out = document.getElementById("pi");
+        const copyBtn = document.getElementById("copyBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const countDisplay = document.getElementById("count");
+
+        let q = 1n, r = 0n, t = 1n, k = 1n, n = 3n, l = 3n;
+        let running = true;
+        let totalDigits = 0;
+
+        function nextPiDigits(batch = 1000) {
+            if (!running) return;
+            let digits = "";
+            for (let i = 0; i < batch; i++) {
+                if (4n * q + r - t < n * t) {
+                    digits += n.toString();
+                    let nr = 10n * (r - n * t);
+                    n = ((10n * (3n * q + r)) / t) - 10n * n;
+                    r = nr;
+                    q = 10n * q;
+                    totalDigits++;
+                } else {
+                    let nr = (2n * q + r) * l;
+                    let nn = (q * (7n * k) + 2n + r * l) / (t * l);
+                    q = q * k;
+                    t = t * l;
+                    l += 2n;
+                    k += 1n;
+                    n = nn;
+                    r = nr;
+                }
+            }
+            out.textContent += digits;
+            countDisplay.textContent = totalDigits;
+            out.scrollTop = out.scrollHeight;
+            setTimeout(() => nextPiDigits(batch), 0);
+        }
+
+        // Copy-Button Funktion
+        copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(out.textContent).then(() => {
+                alert("Pi in die Zwischenablage kopiert!");
+            }).catch(err => alert("Fehler beim Kopieren: " + err));
+        });
+
+        // Stop-Button Funktion
+        stopBtn.addEventListener("click", () => {
+            document.getElementById("back").style.display = "inline-block";
+            document.getElementById("stopBtn").style.display = "none";
+            running = false;
+        });
+
+        nextPiDigits(1000); // 1000 Ziffern pro Schritt
+    </script>
+    <!-- Tokenabfrage-Script entfernt -->
+</body>
+
+</html>
