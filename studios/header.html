@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header Menü</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(90deg, #4f8cff 0%, #6ee7b7 100%);
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            padding: 10px 24px;
+        }
+        .logo {
+            height: 48px;
+        }
+        nav {
+            display: flex;
+            gap: 24px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        nav a:hover {
+            background: #444;
+        }
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .menu-toggle span {
+            width: 28px;
+            height: 3px;
+            background: #fff;
+            margin: 5px 0;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+        @media (max-width: 700px) {
+            nav {
+                display: none;
+                position: absolute;
+                top: 64px;
+                right: 0;
+                background: #222;
+                flex-direction: column;
+                width: 100%;
+                gap: 0;
+            }
+            nav.open {
+                display: flex;
+            }
+            nav a {
+                padding: 16px;
+                border-bottom: 1px solid #333;
+            }
+            .menu-toggle {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" target="_top"> <img src="/studios/Logo.png" alt="Logo" class="logo"> </a>
+        <div class="menu-toggle" id="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <nav id="nav-menu">
+            <a href="videos.html">Videos</a>
+            <a href="bilder.html">Bilder</a>
+            <a href="musik.html">Musik</a>
+        </nav>
+    </header>
+    <script>
+        const toggle = document.getElementById('menu-toggle');
+        const nav = document.getElementById('nav-menu');
+        toggle.addEventListener('click', () => {
+            nav.classList.toggle('open');
+        });
+    </script>
+</body>
+</html>
