@@ -187,6 +187,16 @@
         link.href = "login.html";
       }
     }
+    function bonusAvailable() {
+      if (getCookie("bonus") === "1") {
+        document.getElementById("bonus").style.display = "block";
+        document.getElementById("normal").style.display = "none";
+      } else {
+        document.getElementById("bonus").style.display = "none";
+        document.getElementById("normal").style.display = "block";
+
+      }
+    }
   </script>
 
 
