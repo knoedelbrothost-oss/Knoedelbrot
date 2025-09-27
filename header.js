@@ -10,15 +10,20 @@ function deleteCookie(name) {
 }
 
 function bonusAvailable() {
-    if (getCookie("bonus") === "1") {
-        document.getElementById("bonus").style.display = "block";
-        document.getElementById("normal").style.display = "none";
-    } else {
-        document.getElementById("bonus").style.display = "none";
-        document.getElementById("normal").style.display = "block";
+    const bonusEl = document.getElementById("bonus");
+    const normalEl = document.getElementById("normal");
 
+    if (!bonusEl || !normalEl) return; // Verhindert Fehler
+
+    if (getCookie("bonus") === "1") {
+        bonusEl.style.display = "block";
+        normalEl.style.display = "none";
+    } else {
+        bonusEl.style.display = "none";
+        normalEl.style.display = "block";
     }
 }
+
 
 function initHeader() {
     const loginLink = document.getElementById("loginLink");
