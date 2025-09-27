@@ -165,39 +165,23 @@
 <body>
   <div id="header-placeholder"></div>
 
-  <script>
-    // Header laden
-    fetch("header.html")
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById("header-placeholder").innerHTML = html;
-        initHeader(); // ganz wichtig: erst nach dem Einfügen aufrufen
-      });
+  <div id="header-placeholder"></div>
 
-    function initHeader() {
-      const header = document.getElementById("header-placeholder");
-      const loginStatus = document.cookie.includes("login=1");
-      const link = header.querySelector("#loginLink");
+<script src="header.js"></script>
+<script>
+fetch("header.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("header-placeholder").innerHTML = html;
 
-      if (loginStatus) {
-        link.textContent = "Profil";
-        link.href = "profile.html";
-      } else {
-        link.textContent = "Login";
-        link.href = "login.html";
-      }
-    }
-    function bonusAvailable() {
-      if (getCookie("bonus") === "1") {
-        document.getElementById("bonus").style.display = "block";
-        document.getElementById("normal").style.display = "none";
-      } else {
-        document.getElementById("bonus").style.display = "none";
-        document.getElementById("normal").style.display = "block";
+    // Header initialisieren
+    initHeader();
 
-      }
-    }
-  </script>
+    // Bonus-Button prüfen
+    bonusAvailable();
+  });
+</script>
+
 
 
 
