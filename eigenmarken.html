@@ -165,29 +165,20 @@
 <body>
     <div id="header-placeholder"></div>
 
-    <script>
-        // Header laden
-        fetch("header.html")
-            .then(r => r.text())
-            .then(html => {
-                document.getElementById("header-placeholder").innerHTML = html;
-                initHeader(); // ganz wichtig: erst nach dem Einfügen aufrufen
-            });
+<script src="header.js"></script>
+<script>
+fetch("header.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("header-placeholder").innerHTML = html;
 
-        function initHeader() {
-            const header = document.getElementById("header-placeholder");
-            const loginStatus = document.cookie.includes("login=1");
-            const link = header.querySelector("#loginLink");
+    // Header initialisieren
+    initHeader();
 
-            if (loginStatus) {
-                link.textContent = "Profil";
-                link.href = "profile.html";
-            } else {
-                link.textContent = "Login";
-                link.href = "login.html";
-            }
-        }
-    </script>
+    // Bonus-Button prüfen
+    bonusAvailable();
+  });
+</script>
 
 
     <h1>Knödelbrot hat einige Eigenmarken</h1>

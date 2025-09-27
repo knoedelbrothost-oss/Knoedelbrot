@@ -118,7 +118,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
             localStorage.removeItem("redirectAfterLogin");
             window.location.href = redirectURL;
         } else {
-            window.location.href = "dashboard.html"; // Standardseite
+            window.location.href = "index.html"; // Standardseite
         }
     } else {
         document.getElementById("error").textContent = "Falscher Benutzername oder Passwort!";

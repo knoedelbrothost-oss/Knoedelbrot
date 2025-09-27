@@ -35,13 +35,9 @@ function initHeader() {
 
     if (loginStatus === "1") {
         // Wenn angemeldet: Login zu Logout
-        loginLink.textContent = "Logout";
+        loginLink.textContent = "Profile";
         loginLink.addEventListener("click", function (e) {
-            e.preventDefault();
-            deleteCookie("login");
-            deleteCookie("bonus");
-            // nach Logout auf Startseite
-            window.location.href = "index.html";
+            window.location.href = "profile.html";
         });
     } else {
         // Wenn nicht angemeldet: normaler Login-Link

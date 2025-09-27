@@ -1,221 +1,261 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profil - Knödelbrot</title>
-<link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Pacifico&display=swap" rel="stylesheet">
-<style>
-body {
-    font-family: "DynaPuff", system-ui;
-    background-color: #111;
-    color: whitesmoke;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-.profile-box {
-    background-color: black;
-    border-radius: 90px;
-    padding: 40px;
-    width: 380px;
-    text-align: center;
-    box-shadow: 0 0 20px rgba(255,255,255,0.2);
-}
-h1 {
-    font-family: "Pacifico", cursive;
-    font-size: 46px;
-    color: whitesmoke;
-    margin-bottom: 20px;
-}
-input[type="text"] {
-    width: 80%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 90px;
-    border: none;
-    background-color: #222;
-    color: whitesmoke;
-    font-size: 18px;
-    outline: none;
-}
-input[type="text"]:focus {
-    background-color: #333;
-}
-button {
-    background-color: black;
-    color: white;
-    border: none;
-    border-radius: 90px;
-    padding: 12px 40px;
-    font-size: 20px;
-    cursor: pointer;
-    transition: 0.4s;
-    margin-top: 15px;
-}
-button:hover {
-    background-color: rgb(125,125,125);
-    color: black;
-}
-#message {
-    color: #0f0;
-    margin-top: 10px;
-}
-#error {
-    color: red;
-    margin-top: 10px;
-}
-#deleteBtn {
-    background-color: #800000;
-}
-#deleteBtn:hover {
-    background-color: #ff0000;
-    color: white;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Knödelbrot</title>
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: "DynaPuff", system-ui;
+            background-color: #111;
+            color: whitesmoke;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .profile-box {
+            background-color: black;
+            border-radius: 90px;
+            padding: 40px;
+            width: 380px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-family: "Pacifico", cursive;
+            font-size: 46px;
+            color: whitesmoke;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 90px;
+            border: none;
+            background-color: #222;
+            color: whitesmoke;
+            font-size: 18px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            background-color: #333;
+        }
+
+        button {
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 90px;
+            padding: 12px 40px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.4s;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: rgb(125, 125, 125);
+            color: black;
+        }
+
+        #message {
+            color: #0f0;
+            margin-top: 10px;
+        }
+
+        #error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        #deleteBtn {
+            background-color: #800000;
+        }
+
+        #deleteBtn:hover {
+            background-color: #ff0000;
+            color: white;
+        }
+    </style>
 </head>
+
 <body>
+    <div id="header-placeholder"></div>
 
-<div class="profile-box">
-    <h1>Mein Profil</h1>
-    <p id="welcome"></p>
+    <script src="header.js"></script>
+    <script>
+        fetch("header.html")
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("header-placeholder").innerHTML = html;
 
-    <div id="bonus-section">
-        <p>Hier kannst du deinen Knödelbrot-Bonuscode einlösen:</p>
-        <input type="text" id="bonusCode" placeholder="Bonuscode eingeben">
-        <button id="redeemBtn">Einlösen</button>
-        <div id="message"></div>
-        <div id="error"></div>
+                // Header initialisieren
+                initHeader();
+
+                // Bonus-Button prüfen
+                bonusAvailable();
+            });
+    </script>
+
+    <div class="profile-box">
+        <h1>Mein Profil</h1>
+        <p id="welcome"></p>
+
+        <div id="bonus-section">
+            <p>Hier kannst du deinen Knödelbrot-Bonuscode einlösen:</p>
+            <input type="text" id="bonusCode" placeholder="Bonuscode eingeben">
+            <button id="redeemBtn">Einlösen</button>
+            <div id="message"></div>
+            <div id="error"></div>
+        </div>
+
+        <button id="logoutBtn">Logout</button>
+
+        <hr style="margin:20px 0; border:1px solid #555;">
+
+        <button id="deleteBtn">Konto löschen</button>
     </div>
 
-    <hr style="margin:20px 0; border:1px solid #555;">
+    <script src="login_check.js"></script>
 
-    <button id="deleteBtn">Konto löschen</button>
-</div>
+    <script>
+        function getUsers() {
+            const data = localStorage.getItem("users");
+            return data ? JSON.parse(data) : {};
+        }
 
-<script src="login_check.js"></script>
+        function saveUsers(users) {
+            localStorage.setItem("users", JSON.stringify(users));
+        }
 
-<script>
-function getUsers() {
-    const data = localStorage.getItem("users");
-    return data ? JSON.parse(data) : {};
-}
+        // Hilfsfunktion Cookies setzen/löschen
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const d = new Date();
+                d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + d.toUTCString();
+            }
+            document.cookie = name + "=" + value + expires + "; path=/";
+        }
 
-function saveUsers(users) {
-    localStorage.setItem("users", JSON.stringify(users));
-}
+        function deleteCookie(name) {
+            document.cookie = name + '=; Max-Age=-99999999; path=/';
+        }
 
-// Hilfsfunktion Cookies setzen/löschen
-function setCookie(name, value, days){
-    let expires = "";
-    if(days){
-        const d = new Date();
-        d.setTime(d.getTime() + (days*24*60*60*1000));
-        expires = "; expires="+d.toUTCString();
-    }
-    document.cookie = name+"="+value+expires+"; path=/";
-}
-
-function deleteCookie(name){
-    document.cookie = name+'=; Max-Age=-99999999; path=/';
-}
-
-// Bonuscode prüfen
-async function checkBonusCode(code){
-    if(!code) return false;
-    try{
-        const response = await fetch("bonuscodes.txt");
-        const text = await response.text();
-        const lines = text.split("\n");
-        const today = new Date();
-        for(const line of lines){
-            const [c, date] = line.split(";");
-            if(c && date){
-                if(c.trim() === code.trim() && today <= new Date(date.trim())){
-                    return true;
+        // Bonuscode prüfen
+        async function checkBonusCode(code) {
+            if (!code) return false;
+            try {
+                const response = await fetch("bonuscodes.txt");
+                const text = await response.text();
+                const lines = text.split("\n");
+                const today = new Date();
+                for (const line of lines) {
+                    const [c, date] = line.split(";");
+                    if (c && date) {
+                        if (c.trim() === code.trim() && today <= new Date(date.trim())) {
+                            return true;
+                        }
+                    }
                 }
+                return false;
+            } catch (e) {
+                console.error("Bonuscode-Datei konnte nicht geladen werden");
+                return false;
             }
         }
-        return false;
-    } catch(e){
-        console.error("Bonuscode-Datei konnte nicht geladen werden");
-        return false;
-    }
-}
 
-// Prüfen, ob eingeloggt
-const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-if(!username){
-    alert("Bitte zuerst einloggen!");
-    window.location.href = "login.html";
-}
+        // Prüfen, ob eingeloggt
+        const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        if (!username) {
+            alert("Bitte zuerst einloggen!");
+            window.location.href = "login.html";
+        }
 
-const users = getUsers();
-const user = users[username];
+        const users = getUsers();
+        const user = users[username];
 
-document.getElementById("welcome").textContent = `Willkommen, ${username}!`;
+        document.getElementById("welcome").textContent = `Willkommen, ${username}!`;
 
-const bonusSection = document.getElementById("bonus-section");
-const bonusInput = document.getElementById("bonusCode");
-const redeemBtn = document.getElementById("redeemBtn");
-const message = document.getElementById("message");
-const error = document.getElementById("error");
+        const bonusSection = document.getElementById("bonus-section");
+        const bonusInput = document.getElementById("bonusCode");
+        const redeemBtn = document.getElementById("redeemBtn");
+        const message = document.getElementById("message");
+        const error = document.getElementById("error");
 
-// Wenn Benutzer schon einen Bonuscode eingelöst hat oder Bonus manuell vergeben wurde
-if(user.bonusCode || user.bonus){
-    let msg = user.bonusCode 
-              ? `Du hast bereits den Bonuscode <strong>${user.bonusCode}</strong> eingelöst. ✅`
-              : `Dir wurde bereits manuell ein Bonus zugewiesen. ✅`;
-    bonusSection.innerHTML = `<p>${msg}</p>`;
-}
+        // Wenn Benutzer schon einen Bonuscode eingelöst hat oder Bonus manuell vergeben wurde
+        if (user.bonusCode || user.bonus) {
+            let msg = user.bonusCode
+                ? `Du hast bereits den Bonuscode <strong>${user.bonusCode}</strong> eingelöst. ✅`
+                : `Dir wurde bereits manuell ein Bonus zugewiesen. ✅`;
+            bonusSection.innerHTML = `<p>${msg}</p>`;
+        }
 
-// Bonuscode einlösen
-redeemBtn.addEventListener("click", async function(){
-    error.textContent = "";
-    message.textContent = "";
+        // Bonuscode einlösen
+        redeemBtn.addEventListener("click", async function () {
+            error.textContent = "";
+            message.textContent = "";
 
-    if(user.bonus){
-        error.textContent = "Du hast bereits einen Bonus!";
-        return;
-    }
+            if (user.bonus) {
+                error.textContent = "Du hast bereits einen Bonus!";
+                return;
+            }
 
-    const code = bonusInput.value.trim();
-    if(!code){
-        error.textContent = "Bitte einen Code eingeben!";
-        return;
-    }
+            const code = bonusInput.value.trim();
+            if (!code) {
+                error.textContent = "Bitte einen Code eingeben!";
+                return;
+            }
 
-    const valid = await checkBonusCode(code);
-    if(valid){
-        user.bonusCode = code;
-        user.bonus = true;
-        saveUsers(users);
+            const valid = await checkBonusCode(code);
+            if (valid) {
+                user.bonusCode = code;
+                user.bonus = true;
+                saveUsers(users);
 
-        setCookie("bonus", "1", 7);
+                setCookie("bonus", "1", 7);
 
-        bonusSection.innerHTML = `<p>Code <strong>${code}</strong> erfolgreich eingelöst! ✅</p>`;
-    } else {
-        error.textContent = "Ungültiger oder abgelaufener Code.";
-    }
-});
+                bonusSection.innerHTML = `<p>Code <strong>${code}</strong> erfolgreich eingelöst! ✅</p>`;
+            } else {
+                error.textContent = "Ungültiger oder abgelaufener Code.";
+            }
+        });
 
-// Konto löschen
-document.getElementById("deleteBtn").addEventListener("click", function(){
-    if(confirm("Bist du sicher, dass du dein Konto löschen möchtest? Dies kann nicht rückgängig gemacht werden.")){
-        delete users[username];
-        saveUsers(users);
+        // Logout
+        document.getElementById("logoutBtn").addEventListener("click", function () {
+            e.preventDefault();
+            deleteCookie("login");
+            deleteCookie("bonus");
+            window.location.href = "index.html";
+        });
 
-        deleteCookie("login");
-        deleteCookie("bonus");
-        deleteCookie("username");
+        // Konto löschen
+        document.getElementById("deleteBtn").addEventListener("click", function () {
+            if (confirm("Bist du sicher, dass du dein Konto löschen möchtest? Dies kann nicht rückgängig gemacht werden.")) {
+                delete users[username];
+                saveUsers(users);
 
-        alert("Dein Konto wurde gelöscht.");
-        window.location.href = "index.html";
-    }
-});
-</script>
+                deleteCookie("login");
+                deleteCookie("bonus");
+                deleteCookie("username");
+
+                alert("Dein Konto wurde gelöscht.");
+                window.location.href = "index.html";
+            }
+        });
+    </script>
 
 </body>
+
 </html>
