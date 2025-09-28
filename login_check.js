@@ -23,17 +23,9 @@ function checkLogin(username, password) {
 
 // Bonus aktivieren
 function activateBonus(username) {
-    let all = JSON.parse(localStorage.getItem("users")) || {};
-    if(all[username]){
-        // Bonus bleibt wie gespeichert
-        localStorage.setItem("users", JSON.stringify(all));
+    let bonus = false;
+    if (users[username] && users[username].bonus !== false) {
+        bonus = users[username].bonus;
     }
-
-    // Cookie setzen oder löschen
-    let bonusValue = users[username] ? users[username].bonus : false;
-    if(bonusValue && bonusValue !== false){
-        document.cookie = "bonus=" + bonusValue + "; path=/";
-    } else {
-        document.cookie = "bonus=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    }
+    return bonus;
 }

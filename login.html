@@ -99,6 +99,8 @@ function setCookie(name, value, days) {
     document.cookie = name + "=" + value + expires + "; path=/";
 }
 
+
+
 // Login-Formular
 document.getElementById("loginForm").addEventListener("submit", function(e){
     e.preventDefault();
@@ -109,8 +111,9 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
 
     if(result.success){
         // Cookies setzen
-        setCookie("login", "1", 7);
-        setCookie("bonus", result.bonus ? "1" : "0", 7);
+        setCookie("login", "1", 1);
+        function activateBonus(username) {}
+        setCookie("bonus", bonus, 1);
 
         // Prüfen, ob vorherige Seite gespeichert wurde
         const redirectURL = localStorage.getItem("redirectAfterLogin");
