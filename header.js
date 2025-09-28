@@ -12,12 +12,14 @@ function deleteCookie(name) {
 function bonusAvailable() {
     const bonusEl = document.getElementById("bonus");
     const normalEl = document.getElementById("normal");
+    const normalEl2 = document.getElementById("normal2");
 
     if (!bonusEl || !normalEl) return; // Verhindert Fehler
 
     if (getCookie("bonus") === "1") {
         bonusEl.style.display = "block";
         normalEl.style.display = "none";
+        normalEl2.style.display = "none";
     } else {
         bonusEl.style.display = "none";
         normalEl.style.display = "block";
@@ -56,3 +58,4 @@ function initHeader() {
         menu.classList.toggle("active");
     });
 }
+
