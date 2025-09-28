@@ -120,7 +120,8 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
     if(result.success){
         // Cookies setzen
     setCookie("login", "1", 7);
-    setCookie("bonus", result.bonus, 7);
+    let bonusStatus = activateBonus(username);
+    setCookie("bonus", bonusStatus, 7);
 
         // Prüfen, ob vorherige Seite gespeichert wurde
         const redirectURL = localStorage.getItem("redirectAfterLogin");
@@ -128,7 +129,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
             localStorage.removeItem("redirectAfterLogin");
             window.location.href = redirectURL;
         } else {
-            window.location.href = "dashboard.html"; // Standardseite
+            window.location.href = "index.html"; // Standardseite
         }
     } else {
         document.getElementById("error").textContent = "Falscher Benutzername oder Passwort!";
