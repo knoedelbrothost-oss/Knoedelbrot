@@ -54,8 +54,8 @@
             localStorage.setItem("redirectAfterLogin", window.location.href);
             window.location.href = "login.html";
         }
-        else if (getCookie('bonus') !== '1') {
-            alert("Du hast leider keinen Zugriff auf diese Seite. Bitte melde dich mit einem Bonus-Account an.");
+        else if (getCookie('bonus') !== 'ultra' && getCookie('bonus') !== 'partner') {
+            alert("Du hast leider keinen Zugriff auf diese Seite. Bitte melde dich mit einem Bonus-Ultra-Account an.");
         }
     </script>
 

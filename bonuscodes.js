@@ -1,7 +1,7 @@
 // bonuscodes.js
 const bonusCodes = [
-    { code: "test123456789", expires: "2099-10-01" },
-    { code: "benni-571", expires: "2026-01-01" }
+    { code: "test123456789", expires: "2099-10-01", typ: "ultra" },
+    { code: "benni-571", expires: "2026-01-01", typ: "partner" },
 ];
 
 // Funktion: prüft, ob Code gültig ist

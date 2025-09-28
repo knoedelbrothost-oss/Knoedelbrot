@@ -2,7 +2,7 @@
 
 // Vordefinierte Benutzer
 let users = {
-    "niklas": { password: "5-Freunde", bonus: true },
+    "niklas": { password: "5-Freunde", bonus: "ultra" },
 };
 
 // Lade zusätzliche Benutzer
@@ -25,13 +25,15 @@ function checkLogin(username, password) {
 function activateBonus(username) {
     let all = JSON.parse(localStorage.getItem("users")) || {};
     if(all[username]){
-        all[username].bonus = true;
+        // Bonus bleibt wie gespeichert
         localStorage.setItem("users", JSON.stringify(all));
     }
-    if(users[username]){
-        users[username].bonus = true;
-    }
 
-    // Cookies aktualisieren
-    document.cookie = "bonus=1; path=/";
+    // Cookie setzen oder löschen
+    let bonusValue = users[username] ? users[username].bonus : false;
+    if(bonusValue && bonusValue !== false){
+        document.cookie = "bonus=" + bonusValue + "; path=/";
+    } else {
+        document.cookie = "bonus=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    }
 }

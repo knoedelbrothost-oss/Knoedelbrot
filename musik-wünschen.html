@@ -159,20 +159,6 @@
 
 <body>
     <script>
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-        if (getCookie('login') !== '1') {
-            localStorage.setItem("redirectAfterLogin", window.location.href);
-            window.location.href = "login.html";
-        }
-        else if (getCookie('bonus') !== '1') {
-            alert("Du hast leider keinen Zugriff auf diese Seite. Bitte melde dich mit einem Bonus-Account an.");
-        }
-    </script>
-    <script>
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
@@ -191,6 +177,20 @@
         <p>Knödelbrot Studios</p> 
     </header>
     <main>
+        <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        if (getCookie('login') !== '1') {
+            localStorage.setItem("redirectAfterLogin", window.location.href);
+            window.location.href = "login.html";
+        }
+        else if (getCookie('bonus') !== 'ultra' && getCookie('bonus') !== 'partner' && getCookie('bonus') !== 'shop premium' && getCookie('bonus') !== 'basic' && getCookie('bonus') !== 'magazin') {
+            alert("Du hast leider keinen Zugriff auf diese Seite. Bitte melde dich mit einem autorisiertem Bonus-Account an.");
+        }
+        </script>
         <div id="content">
             <h2>Willkommen!</h2> <br>
             <p>Hier kannst du deine Songwünsche einreichen.</p> <br>
@@ -199,6 +199,7 @@
                 height="700" frameborder="0" marginheight="0" marginwidth="0">Wird geladen…</iframe>
         </div>
     </main>
+    
 </body>
 
 </html>
