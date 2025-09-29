@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vorabzugriff Prüfung</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align: center; margin-top: 60px; }
+  video { width: 320px; height: 240px; border-radius: 10px; background: #222; display: none; margin-top: 20px; }
+  #status { margin-top: 20px; font-size: 1.2em; }
+</style>
+</head>
+<body>
+
+<h1>Vorabzugriff</h1>
+<p id="leadText">Bitte erlaube Kamera- und Standortzugriff, um die Prüfung abzuschließen.</p>
+<video id="faceVideo" autoplay playsinline muted></video>
+<div id="status">Starte Prüfungssequenz…</div>
+
+<script>
+const status = document.getElementById('status');
+const leadText = document.getElementById('leadText');
+const video = document.getElementById('faceVideo');
+
+// Hash-Name abfragen
+const hashName = location.hash ? location.hash.substring(1) : null;
+if(hashName){
+  leadText.textContent = `Hallo ${decodeURIComponent(hashName)}, bitte schließe deine Authentifikation ab.`;
+}
+
+// Sleep Funktion
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+async function fakeChecks() {
+  status.textContent = "IP-Adresse wird geprüft...";
+  await sleep(1000);
+
+  status.textContent = "Gerätemodell wird erkannt...";
+  await sleep(1000);
+
+  status.textContent = "Standort wird überprüft...";
+  try {
+    await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+    status.textContent = "Standort erfolgreich überprüft...";
+  } catch {
+    status.textContent = "Standortzugriff verweigert. Zugriff nicht möglich.";
+    return;
+  }
+
+  await sleep(1000);
+  status.textContent = "Face ID wird überprüft...";
+
+  // Kamera starten
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+    video.style.display = "block";
+
+    // Prüfen, ob FaceDetector API unterstützt wird
+    if (!('FaceDetector' in window)) {
+      status.textContent = "FaceDetector wird von deinem Browser nicht unterstützt.";
+      return;
+    }
+
+    const faceDetector = new FaceDetector({ fastMode: true });
+
+    const detectFace = async () => {
+      try {
+        const faces = await faceDetector.detect(video);
+        if (faces.length > 0) {
+          status.textContent = "Gesicht erkannt! Face ID OK";
+          // Kamera stoppen
+          stream.getTracks().forEach(track => track.stop());
+          await sleep(1000);
+          status.textContent = "Zugriff gewährt. Weiterleitung...";
+          await sleep(800);
+          window.location.href = "index.html"; // Weiterleitung
+        } else {
+          status.textContent = "Bitte Gesicht in Kamera halten...";
+          requestAnimationFrame(detectFace);
+        }
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Fehler bei der Gesichtserkennung.";
+      }
+    };
+    detectFace();
+
+  } catch (e) {
+    console.error(e);
+    status.textContent = "Kamerazugriff verweigert. Zugriff nicht möglich.";
+  }
+}
+
+// Start der Prüfungssequenz
+fakeChecks();
+</script>
+</body>
+</html>
