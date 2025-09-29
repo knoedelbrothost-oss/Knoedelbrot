@@ -102,19 +102,25 @@
 </head>
 
 <body>
+    <script>
+        document.cookie = "bonus=neu-website; path=/webadresse; SameSite=Lax";
+    </script>
     <div id="header-placeholder"></div>
 
-    <script src="header.js"></script>
-    <script>
-        fetch("header.html")
-            .then(r => r.text())
-            .then(html => {
-                document.getElementById("header-placeholder").innerHTML = html;
+<script src="header.js"></script>
+<script>
+fetch("header.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("header-placeholder").innerHTML = html;
 
-                // Header initialisieren
-                initHeader();
-            });
-    </script>
+    // Header initialisieren
+    initHeader();
+
+    // Bonus-Button prüfen
+    bonusAvailable();
+  });
+</script>
 
     <h1>Neue Adresse</h1>
     <h2 class="center">Die Webadresse der Website hat sich geändert.</h2>
