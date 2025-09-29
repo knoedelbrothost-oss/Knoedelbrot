@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Vorabzugriff — Prüfung</title>
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 <style>
   :root{
     --accent:#3498db;
@@ -49,9 +50,9 @@
   .step .icon{
     width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;border-radius:8px;background:#f5f8fb;
   }
-  .step.active{ background:linear-gradient(90deg,#f8fcff,#fbfdff); border-color:rgba(52,152,219,.12); }
+  .step.active{  background: var(--card); /* gleiche Farbe wie Standard */ border-color: rgba(0,0,0,0.04); /* Standardrahmen */ }
   .step.done .icon{ background:linear-gradient(90deg,#e9fbf3,#f3fff6); }
-  .step.error{ border-color:rgba(231,76,60,.12); background:linear-gradient(90deg,#fff7f6,#fff9f9); }
+  .step.error{ display: none; }
 
   .statusText{ font-size:.95rem; }
   .sub{ color:#666; font-size:.82rem; }
@@ -118,6 +119,7 @@
     <div id="videoContainer" aria-live="polite">
       <video id="faceVideo" autoplay playsinline muted></video>
       <div class="placeholder" id="videoPlaceholder">Kamera inaktiv</div>
+      <canvas id="overlay" style="position:absolute;left:50%;transform:translateX(-50%);top:0;pointer-events:none;"></canvas>
     </div>
 
     <div id="status" aria-live="polite">Starte Prüfungssequenz…</div>
@@ -137,6 +139,8 @@ const status = document.getElementById('status');
 const sub = key => document.getElementById('sub-' + key);
 const video = document.getElementById('faceVideo');
 const placeholder = document.getElementById('videoPlaceholder');
+const overlay = document.getElementById('overlay');
+const ctx = overlay.getContext('2d');
 const leadText = document.getElementById('leadText');
 
 let currentStream = null;
@@ -146,7 +150,7 @@ let aborted = false;
 // Hash-Name prüfen und Lead-Text anpassen
 const hashName = location.hash ? location.hash.substring(1) : null;
 if(hashName){
-  leadText.textContent = `Hallo ${decodeURIComponent(hashName)}, bitte schließe deine Authentifikation ab. Manchmal kann es sein, dass du die Authentifikation neustarten musst, wenn du eine Erlaubnis gegeben hast!`;
+  leadText.textContent = `Hallo ${decodeURIComponent(hashName)}, bitte schließe deine Authentifikation ab.`;
 }
 
 function markStep(key, state, message){
@@ -193,12 +197,14 @@ function geolocationGet(timeoutMs=5000){
 async function runFakeChecks(){
   resetAll();
 
+  // IP
   status.textContent='IP-Adresse wird geprüft...';
   markStep('ip','active','Prüfung läuft…');
   await sleep(900);
   if(aborted) return;
   markStep('ip','done','IP: geprüft');
 
+  // Device
   await sleep(300);
   status.textContent='Gerätemodell wird erkannt...';
   markStep('device','active','Ermittle Modell...');
@@ -207,6 +213,7 @@ async function runFakeChecks(){
   const ua = navigator.userAgent || 'unbekannt';
   markStep('device','done', ua.length>0?(ua.slice(0,60)+(ua.length>60?'…':'')):'unbekannt');
 
+  // Standort
   await sleep(400);
   status.textContent='Standort wird überprüft...';
   markStep('location','active','Fordere Standort an...');
@@ -217,32 +224,50 @@ async function runFakeChecks(){
     status.textContent='Standort erfolgreich überprüft.';
   }catch(err){
     markStep('location','error', err?.message || 'Zugriff verweigert');
-    status.textContent='Standortzugriff verweigert oder Time‑out. Manchmal kann es sein, dass du die Authentifikation neustarten musst, wenn du eine Erlaubnis gerade gegeben hast!';
+    status.textContent='Standortzugriff verweigert oder Time‑out.';
     return;
   }
 
-  await sleep(300);
+  // Face-ID
   status.textContent='Face ID wird überprüft...';
   markStep('face','active','Bitte Kamera zulassen...');
-  try{
+  try {
     const stream = await navigator.mediaDevices.getUserMedia({video:{width:640,height:480}});
     if(aborted){stream.getTracks().forEach(t=>t.stop());return;}
     currentStream = stream;
-    video.srcObject=stream;
+    video.srcObject = stream;
     video.style.display='block';
     placeholder.style.display='none';
     sub('face').textContent='Kamera läuft — scanne Gesicht...';
-    status.textContent='Kamerazugriff erlaubt. Scanne Face ID...';
-    await sleep(2000);
-    if(aborted) return;
-    status.textContent='Face ID erfolgreich überprüft.';
-    markStep('face','done','Face ID OK');
-    await sleep(900);
-    status.textContent='Zugriff gewährt. Weiterleitung...';
-    await sleep(700);
-    stopCamera();
-    window.location.href='index.html';
-  }catch(e){
+    status.textContent='Kamerazugriff erlaubt. Lade Modelle...';
+
+    // face-api.js Modelle laden
+await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
+
+    overlay.width = video.videoWidth || 640;
+    overlay.height = video.videoHeight || 480;
+
+    const detectLoop = async () => {
+      const detections = await faceapi.detectAllFaces(video,new faceapi.TinyFaceDetectorOptions());
+      ctx.clearRect(0,0,overlay.width,overlay.height);
+      faceapi.draw.drawDetections(overlay,detections);
+
+      if(detections.length>0){
+        status.textContent='Gesicht erkannt! Face ID OK';
+        markStep('face','done','Face ID OK');
+        stream.getTracks().forEach(t=>t.stop());
+        await sleep(1000);
+        status.textContent='Zugriff gewährt. Weiterleitung...';
+        await sleep(800);
+        window.location.href='index.html';
+      } else {
+        requestAnimationFrame(detectLoop);
+      }
+    };
+
+    video.addEventListener('play', detectLoop);
+
+  } catch(e) {
     console.error(e);
     markStep('face','error', e?.message || 'Kamerazugriff verweigert');
     status.textContent='Kamerazugriff verweigert. Zugriff nicht möglich.';
