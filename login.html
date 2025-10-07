@@ -161,7 +161,7 @@
                 const bonusDoc = await getDoc(doc(db, "users", username));
                 const bonus = bonusDoc.exists() ? bonusDoc.data().bonus : "none";
                 setCookie("login", "1", 7);
-                setCookie("username", username, 7);
+                setCookie("username", username + "@knödelbrot.local", 7);
                 setCookie("bonus", bonus, 7);
             }
         });

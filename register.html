@@ -157,7 +157,7 @@
                 const docSnap = await getDoc(doc(db, "users", username));
                 const bonus = docSnap.exists() ? docSnap.data().bonus : "none";
                 setCookie("login", "1", 7);
-                setCookie("username", username, 7);
+                setCookie("username", username + "@knödelbrot.local", 7);
                 setCookie("bonus", bonus, 7);
             }
         });
