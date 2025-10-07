@@ -128,7 +128,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
         import { getBonusType } from "./bonuscodes.js";
 
@@ -166,6 +166,7 @@
 
         let currentUsername = null;
         let currentUserDoc = null;
+        let currentFakeEmail = null;
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
@@ -173,8 +174,9 @@
                 window.location.href = "login.html";
                 return;
             }
-            currentUsername = user.email.split("@")[0];
-            const docRef = doc(db, "users", currentUsername);
+            currentUsername = user.email.split("@")[0]; // nur für Anzeige
+            currentFakeEmail = `${currentUsername}@knödelbrot.local`; // für Firestore
+            const docRef = doc(db, "users", currentFakeEmail);
             const docSnap = await getDoc(docRef);
             if (!docSnap.exists()) {
                 alert("Benutzerdaten nicht gefunden!");
@@ -205,7 +207,7 @@
 
             const bonusType = getBonusType(code);
             if (bonusType !== "none") {
-                const docRef = doc(db, "users", currentUsername);
+                const docRef = doc(db, "users", currentFakeEmail);
                 await updateDoc(docRef, { bonus: bonusType, bonusCode: code });
                 setCookie("bonus", bonusType, 7);
                 bonusSection.innerHTML = `<p>Code <strong>${code}</strong> erfolgreich eingelöst! ✅</p>`;
@@ -218,27 +220,25 @@
             deleteCookie("login");
             deleteCookie("username");
             deleteCookie("bonus");
-            window.location.href = "index.html"; // Weiterleitung nach Logout
+            window.location.href = "index.html";
         });
 
         deleteBtn.addEventListener("click", async () => {
             if (!confirm("Bist du sicher, dass du dein Konto löschen möchtest? Dies kann nicht rückgängig gemacht werden.")) return;
 
-            const user = auth.currentUser;
-            if (!user) return;
-
             // Löschen im Firestore
-            await deleteDoc(doc(db, "users", currentUsername));
+            await deleteDoc(doc(db, "users", currentFakeEmail));
 
             // Firebase Auth löschen
-            await deleteUser(user);
+            const user = auth.currentUser;
+            if (user) await deleteUser(user);
 
             deleteCookie("login");
             deleteCookie("username");
             deleteCookie("bonus");
 
             alert("Dein Konto wurde gelöscht.");
-            window.location.href = "index.html"; // Weiterleitung nach Konto löschen
+            window.location.href = "index.html";
         });
     </script>
 
