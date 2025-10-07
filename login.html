@@ -15,7 +15,6 @@ body {
     height: 100vh;
     margin: 0;
 }
-
 .login-box {
     background-color: black;
     border-radius: 90px;
@@ -24,14 +23,12 @@ body {
     text-align: center;
     box-shadow: 0 0 20px rgba(255,255,255,0.2);
 }
-
 h1 {
     font-family: "Pacifico", cursive;
     font-size: 46px;
     color: whitesmoke;
     margin-bottom: 30px;
 }
-
 input[type="text"], input[type="password"] {
     width: 80%;
     padding: 12px;
@@ -45,11 +42,9 @@ input[type="text"], input[type="password"] {
     outline: none;
     transition: background 0.3s;
 }
-
 input[type="text"]:focus, input[type="password"]:focus {
     background-color: #333;
 }
-
 button {
     background-color: black;
     color: white;
@@ -62,23 +57,19 @@ button {
     font-family: "DynaPuff", system-ui;
     margin-top: 20px;
 }
-
 button:hover {
     background-color: rgb(125,125,125);
     color: black;
 }
-
 #error {
     color: red;
     margin-top: 15px;
 }
-
 a {
     color: whitesmoke;
     text-decoration: none;
     font-size: 16px;
 }
-
 a:hover {
     text-decoration: underline;
 }
@@ -93,46 +84,71 @@ a:hover {
         <button type="submit">Einloggen</button>
     </form>
     <div id="error"></div>
-    <p>Noch kein Konto? <a href="https://xn--kndelbrot-17a.de//register.html">Registrieren</a></p>
+    <p>Noch kein Konto? <a href="register.html">Registrieren</a></p>
 </div>
 
-<script src="https://xn--kndelbrot-17a.de/login_check.js"></script>
-<script>
-// Cookie setzen
-function setCookie(name, value, days) {
-    let expires = "";
-    if(days){
-        const date = new Date();
-        date.setTime(date.getTime() + (days*24*60*60*1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + value + expires + "; path=/";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBmnEMGPec-dzIANP0pvGT3Lbvm51zFjaY",
+    authDomain: "knoedelbrot-1d1de.firebaseapp.com",
+    projectId: "knoedelbrot-1d1de",
+    storageBucket: "knoedelbrot-1d1de.firebasestorage.app",
+    messagingSenderId: "906476242509",
+    appId: "1:906476242509:web:989fbc20dee736f1eb7e04"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+function setCookie(name, value, days=7){
+    const d = new Date();
+    d.setTime(d.getTime() + (days*24*60*60*1000));
+    document.cookie = name+"="+value+"; expires="+d.toUTCString()+"; path=/";
 }
 
-// Login-Formular
-document.getElementById("loginForm").addEventListener("submit", function(e){
+document.getElementById("loginForm").addEventListener("submit", async (e)=>{
     e.preventDefault();
-    const username = document.getElementById("username").value;
+    const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value;
+    const fakeEmail = username + "@knödelbrot.local";
 
-    const result = checkLogin(username, password);
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, fakeEmail, password);
+        // Bonus aus Firestore holen
+        const bonusDoc = await getDoc(doc(db, "users", username));
+        const bonus = bonusDoc.exists() ? bonusDoc.data().bonus : "none";
 
-    if(result.success){
-        // Cookies setzen
-    setCookie("login", "1", 7);
-    let bonusStatus = activateBonus(username);
-    setCookie("bonus", bonusStatus, 7);
+        setCookie("login", "1", 7);
+        setCookie("username", username, 7);
+        setCookie("bonus", bonus, 7);
 
-        // Prüfen, ob vorherige Seite gespeichert wurde
         const redirectURL = localStorage.getItem("redirectAfterLogin");
         if(redirectURL){
             localStorage.removeItem("redirectAfterLogin");
             window.location.href = redirectURL;
         } else {
-            window.location.href = "index.html"; // Standardseite
+            window.location.href = "index.html";
         }
-    } else {
+
+    } catch (err) {
         document.getElementById("error").textContent = "Falscher Benutzername oder Passwort!";
+        console.error(err);
+    }
+});
+
+// Persistent Login
+onAuthStateChanged(auth, async (user)=>{
+    if(user){
+        const username = user.email.split("@")[0];
+        const bonusDoc = await getDoc(doc(db, "users", username));
+        const bonus = bonusDoc.exists() ? bonusDoc.data().bonus : "none";
+        setCookie("login", "1", 7);
+        setCookie("username", username, 7);
+        setCookie("bonus", bonus, 7);
     }
 });
 </script>

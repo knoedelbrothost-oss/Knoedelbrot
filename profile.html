@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil - Knödelbrot</title>
-        <meta http-equiv="refresh" content="0; url=https://knödelbrot.de/wartung">
     <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Pacifico&display=swap"
         rel="stylesheet">
     <style>
@@ -103,11 +102,7 @@
             .then(r => r.text())
             .then(html => {
                 document.getElementById("header-placeholder").innerHTML = html;
-
-                // Header initialisieren
                 initHeader();
-
-                // Bonus-Button prüfen
                 bonusAvailable();
             });
     </script>
@@ -131,88 +126,73 @@
         <button id="deleteBtn">Konto löschen</button>
     </div>
 
-    <script src="login_check.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+        import { getBonusType } from "./bonuscodes.js";
 
-    <script>
-        function getUsers() {
-            const data = localStorage.getItem("users");
-            return data ? JSON.parse(data) : {};
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmnEMGPec-dzIANP0pvGT3Lbvm51zFjaY",
+            authDomain: "knoedelbrot-1d1de.firebaseapp.com",
+            projectId: "knoedelbrot-1d1de",
+            storageBucket: "knoedelbrot-1d1de.firebasestorage.app",
+            messagingSenderId: "906476242509",
+            appId: "1:906476242509:web:989fbc20dee736f1eb7e04"
+        };
 
-        function saveUsers(users) {
-            localStorage.setItem("users", JSON.stringify(users));
-        }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Hilfsfunktion Cookies setzen/löschen
-        function setCookie(name, value, days) {
-            let expires = "";
-            if (days) {
-                const d = new Date();
-                d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-                expires = "; expires=" + d.toUTCString();
-            }
-            document.cookie = name + "=" + value + expires + "; path=/";
+        function setCookie(name, value, days = 7) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/";
         }
 
         function deleteCookie(name) {
             document.cookie = name + '=; Max-Age=-99999999; path=/';
         }
 
-        // Bonuscode prüfen
-        async function checkBonusCode(code) {
-            if (!code) return false;
-            try {
-                const response = await fetch("bonuscodes.txt");
-                const text = await response.text();
-                const lines = text.split("\n");
-                const today = new Date();
-                for (const line of lines) {
-                    const [c, date] = line.split(";");
-                    if (c && date) {
-                        if (c.trim() === code.trim() && today <= new Date(date.trim())) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            } catch (e) {
-                console.error("Bonuscode-Datei konnte nicht geladen werden");
-                return false;
-            }
-        }
-
-        // Prüfen, ob eingeloggt
-        const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-        if (!username) {
-            alert("Bitte zuerst einloggen!");
-            window.location.href = "login.html";
-        }
-
-        const users = getUsers();
-        const user = users[username];
-
-        document.getElementById("welcome").textContent = `Willkommen, ${username}!`;
-
+        const welcome = document.getElementById("welcome");
         const bonusSection = document.getElementById("bonus-section");
         const bonusInput = document.getElementById("bonusCode");
         const redeemBtn = document.getElementById("redeemBtn");
         const message = document.getElementById("message");
         const error = document.getElementById("error");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const deleteBtn = document.getElementById("deleteBtn");
 
-        // Wenn Benutzer schon einen Bonuscode eingelöst hat oder Bonus manuell vergeben wurde
-        if (user.bonusCode || user.bonus) {
-            let msg = user.bonusCode
-                ? `Du hast bereits den Bonuscode <strong>${user.bonusCode}</strong> eingelöst. ✅`
-                : `Dir wurde bereits manuell ein Bonus zugewiesen. ✅`;
-            bonusSection.innerHTML = `<p>${msg}</p>`;
-        }
+        let currentUsername = null;
+        let currentUserDoc = null;
 
-        // Bonuscode einlösen
-        redeemBtn.addEventListener("click", async function () {
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                alert("Bitte zuerst einloggen!");
+                window.location.href = "login.html";
+                return;
+            }
+            currentUsername = user.email.split("@")[0];
+            const docRef = doc(db, "users", currentUsername);
+            const docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                alert("Benutzerdaten nicht gefunden!");
+                return;
+            }
+            currentUserDoc = docSnap.data();
+            welcome.textContent = `Willkommen, ${currentUsername}!`;
+
+            if (currentUserDoc.bonus && currentUserDoc.bonus !== "none") {
+                bonusSection.innerHTML = `<p>Dir wurde bereits ein Bonus <strong>${currentUserDoc.bonus}</strong> zugewiesen ✅</p>`;
+            }
+        });
+
+        redeemBtn.addEventListener("click", async () => {
             error.textContent = "";
             message.textContent = "";
 
-            if (user.bonus) {
+            if (currentUserDoc.bonus && currentUserDoc.bonus !== "none") {
                 error.textContent = "Du hast bereits einen Bonus!";
                 return;
             }
@@ -223,44 +203,44 @@
                 return;
             }
 
-            const valid = await checkBonusCode(code);
-            if (valid) {
-                user.bonusCode = code;
-                user.bonus = true;
-                saveUsers(users);
-
-                setCookie("bonus", "1", 7);
-
+            const bonusType = getBonusType(code);
+            if (bonusType !== "none") {
+                const docRef = doc(db, "users", currentUsername);
+                await updateDoc(docRef, { bonus: bonusType, bonusCode: code });
+                setCookie("bonus", bonusType, 7);
                 bonusSection.innerHTML = `<p>Code <strong>${code}</strong> erfolgreich eingelöst! ✅</p>`;
             } else {
                 error.textContent = "Ungültiger oder abgelaufener Code.";
             }
         });
 
-        // Logout
-        document.getElementById("logoutBtn").addEventListener("click", function () {
-            e.preventDefault();
+        logoutBtn.addEventListener("click", async () => {
             deleteCookie("login");
+            deleteCookie("username");
             deleteCookie("bonus");
-            window.location.href = "index.html";
+            window.location.href = "index.html"; // Weiterleitung nach Logout
         });
 
-        // Konto löschen
-        document.getElementById("deleteBtn").addEventListener("click", function () {
-            if (confirm("Bist du sicher, dass du dein Konto löschen möchtest? Dies kann nicht rückgängig gemacht werden.")) {
-                delete users[username];
-                saveUsers(users);
+        deleteBtn.addEventListener("click", async () => {
+            if (!confirm("Bist du sicher, dass du dein Konto löschen möchtest? Dies kann nicht rückgängig gemacht werden.")) return;
 
-                deleteCookie("login");
-                deleteCookie("bonus");
-                deleteCookie("username");
+            const user = auth.currentUser;
+            if (!user) return;
 
-                alert("Dein Konto wurde gelöscht.");
-                window.location.href = "index.html";
-            }
+            // Löschen im Firestore
+            await deleteDoc(doc(db, "users", currentUsername));
+
+            // Firebase Auth löschen
+            await deleteUser(user);
+
+            deleteCookie("login");
+            deleteCookie("username");
+            deleteCookie("bonus");
+
+            alert("Dein Konto wurde gelöscht.");
+            window.location.href = "index.html"; // Weiterleitung nach Konto löschen
         });
     </script>
 
 </body>
-
 </html>
