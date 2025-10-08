@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Verdoppeln Langsam</title>
+    <title>Verdoppeln</title>
     <style>
         body {
             font-family: monospace;
@@ -53,7 +53,7 @@
 
 <body>
     <div id="content-wrapper">
-        <h1>Verdoppeln (langsam)</h1>
+        <h1>Verdoppeln</h1>
         <div id="controls">
             <div>Zahlen: <span id="count">0</span></div>
             <button id="copyBtn">Kopieren</button>
@@ -91,7 +91,9 @@
         });
 
         stopBtn.addEventListener("click", () => {
+            stopBtn.style.display = "none";
             running = false;
+            document.getElementById("back").style.display = "inline-block";
         });
 
         nextNumber();

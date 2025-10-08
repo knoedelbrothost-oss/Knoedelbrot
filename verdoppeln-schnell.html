@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Verdoppeln Extrem</title>
+    <title>Verdoppeln Schnell</title>
     <style>
         body {
             font-family: monospace;
@@ -44,11 +44,28 @@
 </head>
 
 <body>
-    <div id="content-wrapper" style="display: block;">
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        if (getCookie('login') !== '1') {
+            localStorage.setItem("redirectAfterLogin", window.location.href);
+            window.location.href = "login.html";
+        }
+        else if (getCookie('bonus') !== 'ultra' && getCookie('bonus') !== 'partner') {
+            alert("Du hast leider keinen Zugriff auf diese Seite. Bitte melde dich mit einem Bonus-Ultra-Account an.");
+            window.location.href = "wurzel-aus-2.html";
+        }
+    </script>
+
+    <div id="content-wrapper">
         <h1>Verdoppeln (extrem schnell)</h1>
         <div id="controls">
             <div>Zahlen: <span id="count">0</span></div>
-            <button id="copyBtn">In Zwischenablage kopieren</button>
+            <button id="copyBtn">Kopieren</button>
         </div>
         <div id="output">1</div>
         <button id="stopBtn" style="margin-top:10px;">Stop</button>
@@ -62,39 +79,36 @@
         const countDisplay = document.getElementById("count");
 
         let running = true;
-        let n = 1n; // Startwert
+        let n = 1n;
         let totalCount = 1;
 
         function nextBatch(batch = 1000) {
             if (!running) return;
-
             let text = "";
             for (let i = 0; i < batch; i++) {
                 n *= 2n;
-                text += ", " + n.toString();
+                text += "\n" + n.toString() + "\n";
                 totalCount++;
             }
-
             out.textContent += text;
             countDisplay.textContent = totalCount;
             out.scrollTop = out.scrollHeight;
-
             setTimeout(() => nextBatch(batch), 0);
         }
 
         copyBtn.addEventListener("click", () => {
             navigator.clipboard.writeText(out.textContent)
-                .then(() => alert("Zahlen in die Zwischenablage kopiert!"))
+                .then(() => alert("Alle Zahlen in die Zwischenablage kopiert!"))
                 .catch(err => alert("Fehler beim Kopieren: " + err));
         });
 
         stopBtn.addEventListener("click", () => {
-            document.getElementById("back").style.display = "inline-block";
-            document.getElementById("stopBtn").style.display = "none";
+            stopBtn.style.display = "none";
             running = false;
+            document.getElementById("back").style.display = "inline-block";
         });
 
-        nextBatch(1000); // 1000 Verdopplungen pro Schritt
+        nextBatch(1000);
     </script>
 </body>
 
