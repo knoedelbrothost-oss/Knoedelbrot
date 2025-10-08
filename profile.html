@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=/">
     <title>Profil - Knödelbrot</title>
     <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Pacifico&display=swap"
         rel="stylesheet">
@@ -66,6 +65,7 @@
             cursor: pointer;
             transition: 0.4s;
             margin-top: 15px;
+            font-family: "DynaPuff", system-ui;
         }
 
         button:hover {
@@ -103,14 +103,14 @@
             .then(r => r.text())
             .then(html => {
                 document.getElementById("header-placeholder").innerHTML = html;
-                initHeader();
-                bonusAvailable();
+                if (typeof initHeader === "function") initHeader();
+                if (typeof bonusAvailable === "function") bonusAvailable();
             });
     </script>
 
     <div class="profile-box">
         <h1>Mein Profil</h1>
-        <p id="welcome"></p>
+        <p id="welcome">Lade Profil...</p>
 
         <div id="bonus-section">
             <p>Hier kannst du deinen Knödelbrot-Bonuscode einlösen:</p>
@@ -129,10 +129,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
         import { getBonusType } from "./bonuscodes.js";
 
+        // --- Firebase config (wie bei dir) ---
         const firebaseConfig = {
             apiKey: "AIzaSyBmnEMGPec-dzIANP0pvGT3Lbvm51zFjaY",
             authDomain: "knoedelbrot-1d1de.firebaseapp.com",
@@ -146,6 +147,14 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- Helpers ---
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return "";
+        }
+
         function setCookie(name, value, days = 7) {
             const d = new Date();
             d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -153,9 +162,10 @@
         }
 
         function deleteCookie(name) {
-            document.cookie = name + '=; Max-Age=-99999999; path=/';
+            document.cookie = name + "=; Max-Age=-99999999; path=/";
         }
 
+        // --- DOM references ---
         const welcome = document.getElementById("welcome");
         const bonusSection = document.getElementById("bonus-section");
         const bonusInput = document.getElementById("bonusCode");
@@ -165,37 +175,69 @@
         const logoutBtn = document.getElementById("logoutBtn");
         const deleteBtn = document.getElementById("deleteBtn");
 
-        let currentUsername = null;
-        let currentUserDoc = null;
+        // --- State ---
+        let currentDocRef = null;   // Firestore doc ref (document ID = fakeEmail)
+        let currentDocData = null;
         let currentFakeEmail = null;
+        let currentUsername = null;
 
+        // --- Load profile: use fake-email as document ID (e.g. "niklas@knödelbrot.local") ---
         onAuthStateChanged(auth, async (user) => {
-            if (!user) {
+            // Try cookie first (username only), fallback to auth email
+            const cookieUsername = getCookie("username");
+            if (!user && !cookieUsername) {
                 alert("Bitte zuerst einloggen!");
                 window.location.href = "login.html";
                 return;
             }
-            currentUsername = user.email.split("@")[0]; // nur für Anzeige
-            currentFakeEmail = `${currentUsername}@knödelbrot.local`; // für Firestore
-            const docRef = doc(db, "users", currentFakeEmail);
-            const docSnap = await getDoc(docRef);
-            if (!docSnap.exists()) {
-                alert("Benutzerdaten nicht gefunden!");
-                return;
-            }
-            currentUserDoc = docSnap.data();
-            welcome.textContent = `Willkommen, ${currentUsername}!`;
 
-            if (currentUserDoc.bonus && currentUserDoc.bonus !== "none") {
-                bonusSection.innerHTML = `<p>Dir wurde bereits ein Bonus <strong>${currentUserDoc.bonus}</strong> zugewiesen ✅</p>`;
+            currentUsername = cookieUsername || (user ? user.email.split("@")[0] : "");
+            currentFakeEmail = `${currentUsername}@knödelbrot.local`;
+
+            console.log("Suche Firestore-Dokument mit ID:", currentFakeEmail);
+
+            try {
+                // document ID = fake email
+                const docRef = doc(db, "users", currentFakeEmail);
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) {
+                    // debug info
+                    console.error("Kein Dokument gefunden mit ID:", currentFakeEmail);
+                    welcome.textContent = "Benutzerdaten nicht gefunden!";
+                    return;
+                }
+
+                currentDocRef = docRef;
+                currentDocData = docSnap.data();
+
+                welcome.textContent = `Willkommen, ${currentUsername}!`;
+
+                if (currentDocData.bonus && currentDocData.bonus !== "none") {
+                    // show existing bonus
+                    bonusSection.innerHTML = `<p>Dir wurde bereits ein Bonus <strong>${currentDocData.bonus}</strong> zugewiesen ✅</p>`;
+                } else {
+                    // keep bonus input visible
+                    // nothing to change here (default HTML shows input)
+                }
+            } catch (err) {
+                console.error("Fehler beim Laden des Profils:", err);
+                welcome.textContent = "Fehler beim Laden des Profils.";
             }
         });
 
+        // --- Bonuscode einlösen ---
         redeemBtn.addEventListener("click", async () => {
             error.textContent = "";
             message.textContent = "";
 
-            if (currentUserDoc.bonus && currentUserDoc.bonus !== "none") {
+            if (!currentDocRef) {
+                error.textContent = "Kein Benutzerprofil geladen.";
+                return;
+            }
+
+            // If user already has a bonus (in currentDocData), block
+            if (currentDocData && currentDocData.bonus && currentDocData.bonus !== "none") {
                 error.textContent = "Du hast bereits einen Bonus!";
                 return;
             }
@@ -206,42 +248,73 @@
                 return;
             }
 
-            const bonusType = getBonusType(code);
-            if (bonusType !== "none") {
-                const docRef = doc(db, "users", currentFakeEmail);
-                await updateDoc(docRef, { bonus: bonusType, bonusCode: code });
+            const bonusType = getBonusType(code); // returns e.g. "ultra" / "partner" / "basic" / "none"
+            if (bonusType === "none") {
+                error.textContent = "Ungültiger oder abgelaufener Code.";
+                return;
+            }
+
+            try {
+                await updateDoc(currentDocRef, { bonus: bonusType, bonusCode: code });
+                currentDocData = { ...(currentDocData || {}), bonus: bonusType, bonusCode: code };
                 setCookie("bonus", bonusType, 7);
                 bonusSection.innerHTML = `<p>Code <strong>${code}</strong> erfolgreich eingelöst! ✅</p>`;
-            } else {
-                error.textContent = "Ungültiger oder abgelaufener Code.";
+                message.textContent = "Bonus erfolgreich aktiviert.";
+            } catch (err) {
+                console.error("Fehler beim Speichern des Bonus:", err);
+                error.textContent = "Fehler beim Speichern des Bonus.";
             }
         });
 
+        // --- Logout: löschen Cookies + redirect ---
         logoutBtn.addEventListener("click", async () => {
+            try {
+                await signOut(auth).catch(() => { /* ignore if not signed in */ });
+            } catch (e) {
+                console.warn("signOut-Fehler:", e);
+            }
             deleteCookie("login");
             deleteCookie("username");
             deleteCookie("bonus");
             window.location.href = "index.html";
         });
 
+        // --- Konto löschen: Firestore doc löschen + Firebase-User löschen (wenn vorhanden) ---
         deleteBtn.addEventListener("click", async () => {
             if (!confirm("Bist du sicher, dass du dein Konto löschen möchtest? Dies kann nicht rückgängig gemacht werden.")) return;
+            if (!currentDocRef) {
+                alert("Kein Benutzerprofil geladen.");
+                return;
+            }
 
-            // Löschen im Firestore
-            await deleteDoc(doc(db, "users", currentFakeEmail));
+            try {
+                // Lösche Firestore-Dokument (ID = fakeEmail)
+                await deleteDoc(currentDocRef);
 
-            // Firebase Auth löschen
-            const user = auth.currentUser;
-            if (user) await deleteUser(user);
+                // Versuche Auth-Nutzer zu löschen (kann fehlschlagen, wenn Reauth nötig)
+                const user = auth.currentUser;
+                if (user) {
+                    try {
+                        await deleteUser(user);
+                    } catch (e) {
+                        console.warn("Firebase Auth deleteUser fehlgeschlagen (Reauth nötig?)", e);
+                        // wir fahren trotzdem fort: Cookies löschen und redirect
+                    }
+                }
 
-            deleteCookie("login");
-            deleteCookie("username");
-            deleteCookie("bonus");
+                deleteCookie("login");
+                deleteCookie("username");
+                deleteCookie("bonus");
 
-            alert("Dein Konto wurde gelöscht.");
-            window.location.href = "index.html";
+                alert("Dein Konto wurde gelöscht.");
+                window.location.href = "index.html";
+            } catch (err) {
+                console.error("Fehler beim Löschen des Kontos:", err);
+                error.textContent = "Fehler beim Löschen des Kontos.";
+            }
         });
     </script>
 
 </body>
+
 </html>

@@ -34,7 +34,7 @@ function initHeader() {
     const loginStatus = getCookie("login");
 
     if (loginStatus === "1") {
-        // Wenn angemeldet: Login zu Logout
+        loginLink.style.display = 'none'; // Versteckt das Element bis es wieder funktioniert
         loginLink.textContent = "Profile";
         loginLink.addEventListener("click", function (e) {
             window.location.href = "profile.html";
