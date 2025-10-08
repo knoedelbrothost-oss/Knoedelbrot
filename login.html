@@ -1,171 +1,18 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Knödelbrot</title>
-    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400&family=Pacifico&display=swap"
-        rel="stylesheet">
-    <style>
-        body {
-            font-family: "DynaPuff", system-ui;
-            background-color: #111;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .login-box {
-            background-color: black;
-            border-radius: 90px;
-            padding: 40px;
-            width: 350px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-        }
-
-        h1 {
-            font-family: "Pacifico", cursive;
-            font-size: 46px;
-            color: whitesmoke;
-            margin-bottom: 30px;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            width: 80%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 90px;
-            border: none;
-            background-color: #222;
-            color: whitesmoke;
-            font-family: "DynaPuff", system-ui;
-            font-size: 18px;
-            outline: none;
-            transition: background 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="password"]:focus {
-            background-color: #333;
-        }
-
-        button {
-            background-color: black;
-            color: white;
-            border: none;
-            border-radius: 90px;
-            padding: 15px 40px;
-            font-size: 20px;
-            cursor: pointer;
-            transition: 0.4s;
-            font-family: "DynaPuff", system-ui;
-            margin-top: 20px;
-        }
-
-        button:hover {
-            background-color: rgb(125, 125, 125);
-            color: black;
-        }
-
-        #error {
-            color: red;
-            margin-top: 15px;
-        }
-
-        a {
-            color: whitesmoke;
-            text-decoration: none;
-            font-size: 16px;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Weiterleitung...</title>
 </head>
-
-<body>
-    <div class="login-box">
-        <h1>Login</h1>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Benutzername" required><br>
-            <input type="password" id="password" placeholder="Passwort" required><br>
-            <button type="submit">Einloggen</button>
-        </form>
-        <div id="error"></div>
-        <p>Noch kein Konto? <a href="register.html">Registrieren</a></p>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBmnEMGPec-dzIANP0pvGT3Lbvm51zFjaY",
-            authDomain: "knoedelbrot-1d1de.firebaseapp.com",
-            projectId: "knoedelbrot-1d1de",
-            storageBucket: "knoedelbrot-1d1de.firebasestorage.app",
-            messagingSenderId: "906476242509",
-            appId: "1:906476242509:web:989fbc20dee736f1eb7e04"
-        };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        function setCookie(name, value, days = 7) {
-            const d = new Date();
-            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/";
-        }
-
-        document.getElementById("loginForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const username = document.getElementById("username").value.trim();
-            const password = document.getElementById("password").value;
-            const fakeEmail = username + "@knödelbrot.local";
-
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, fakeEmail, password);
-                // Bonus aus Firestore holen
-                const bonusDoc = await getDoc(doc(db, "users", username));
-                const bonus = bonusDoc.exists() ? bonusDoc.data().bonus : "none";
-
-                setCookie("login", "1", 7);
-                setCookie("username", username, 7);
-                setCookie("bonus", bonus, 7);
-
-                const redirectURL = localStorage.getItem("redirectAfterLogin");
-                if (redirectURL) {
-                    localStorage.removeItem("redirectAfterLogin");
-                    window.location.href = redirectURL;
-                } else {
-                    window.location.href = "/";
-                }
-
-            } catch (err) {
-                document.getElementById("error").textContent = "Falscher Benutzername oder Passwort!";
-                console.error(err);
-            }
-        });
-
-        // Persistent Login
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const username = user.email.split("@")[0];
-                const bonusDoc = await getDoc(doc(db, "users", username));
-                const bonus = bonusDoc.exists() ? bonusDoc.data().bonus : "none";
-                setCookie("login", "1", 7);
-                setCookie("username", username + "@knödelbrot.local", 7);
-                setCookie("bonus", bonus, 7);
-            }
-        });
-    </script>
+<body style="font-family:sans-serif; background:#111; color:white; text-align:center; padding-top:100px;">
+  <h1>Du wirst weitergeleitet...</h1>
+  <script>
+    // Aktuelle Seite merken
+    const current = window.location.href;
+    const redirect = "https://auth.knödelbrot.de/login.html?redirect=" + encodeURIComponent(current);
+    console.log("Redirecting to:", redirect);
+    window.location.href = redirect;
+  </script>
 </body>
-
 </html>
