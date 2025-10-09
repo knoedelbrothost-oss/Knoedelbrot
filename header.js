@@ -30,9 +30,9 @@ function initHeader() {
 
     const loginStatus = getCookie("login");
 
-    if (loginStatus === "1") {
+    if (loginStatus === "10") { //vorübergehende deaktivation
         // Benutzer ist eingeloggt → Login-Link durch Profil ersetzen
-        loginLink.textContent = "Profil";
+      loginLink.textContent = "Profil";
         loginLink.addEventListener("click", function (e) {
             e.preventDefault();
             window.location.href = "/profile.html";
@@ -58,3 +58,4 @@ function initHeader() {
         menu.classList.toggle("active");
     });
 }
+
