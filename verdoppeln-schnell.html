@@ -53,7 +53,7 @@
 
         if (getCookie('login') !== '1') {
             localStorage.setItem("redirectAfterLogin", window.location.href);
-            window.location.href = "login.html";
+            window.location.href = "https://auth.knödelbrot.de/login.html?redirect=" + redirectURL;
         }
         else if (getCookie('bonus') !== 'ultra' && getCookie('bonus') !== 'partner') {
             alert("Du hast leider keinen Zugriff auf diese Seite. Bitte melde dich mit einem Bonus-Ultra-Account an.");
