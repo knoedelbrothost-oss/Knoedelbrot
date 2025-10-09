@@ -2,6 +2,7 @@
 export const bonusCodes = [
     { code: "test123456789", expires: "2099-10-01", typ: "ultra" },
     { code: "benni-571", expires: "2026-01-01", typ: "partner" },
+    { code: "Linusa578", expires: "2026-01-01", typ: "partner" },
     { code: "4anos57", expires: "2025-11-01", typ: "basic" }
 ];
 
@@ -16,3 +17,4 @@ export function getBonusType(inputCode) {
     }
     return "none"; // kein gültiger Code
 }
+
