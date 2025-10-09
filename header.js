@@ -13,7 +13,7 @@ function bonusAvailable() {
     const bonusEl = document.getElementById("bonus");
     const normalEl = document.getElementById("normal");
 
-    if (!bonusEl || !normalEl) return; // Verhindert Fehler
+    if (!bonusEl || !normalEl) return;
 
     if (getCookie("bonus") !== null) {
         bonusEl.style.display = "block";
@@ -24,32 +24,34 @@ function bonusAvailable() {
     }
 }
 
-
 function initHeader() {
     const loginLink = document.getElementById("loginLink");
-
-
     if (!loginLink) return;
 
     const loginStatus = getCookie("login");
 
     if (loginStatus === "1") {
-        loginLink.style.display = 'none'; // Versteckt das Element bis es wieder funktioniert
-        loginLink.textContent = "Profile";
+        // Benutzer ist eingeloggt → Login-Link durch Profil ersetzen
+        loginLink.textContent = "Profil";
         loginLink.addEventListener("click", function (e) {
-            window.location.href = "profile.html";
+            e.preventDefault();
+            window.location.href = "/profile.html";
         });
     } else {
-        // Wenn nicht angemeldet: normaler Login-Link
+        // Benutzer ist nicht eingeloggt → Login-Link korrekt setzen
         loginLink.textContent = "Login";
         loginLink.addEventListener("click", function (e) {
             e.preventDefault();
-            localStorage.setItem("redirectAfterLogin", window.location.href);
-            window.location.href = "login.html";
+
+            // Aktuelle Seite merken (z. B. bonusprogramm.html)
+            const redirectURL = encodeURIComponent(window.location.href);
+
+            // Weiterleitung direkt zu auth.knödelbrot.de mit Redirect-Parameter
+            window.location.href = "https://auth.knödelbrot.de/login.html?redirect=" + redirectURL;
         });
     }
 
-    // Mobile Menü Toggle
+    // Menü-Toggle (Mobile)
     const menuToggle = document.querySelector('.menu-toggle');
     const menu = document.getElementById('menu');
     menuToggle.addEventListener("click", function () {
