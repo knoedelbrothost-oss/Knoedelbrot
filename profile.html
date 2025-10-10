@@ -1,166 +1,203 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KnödelID</title>
-<link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Pacifico&display=swap" rel="stylesheet">
-<style>
-  body {
-    font-family: "DynaPuff", system-ui;
-    background-color: #fff;
-    color: black;
-    font-size: 20px;
-    margin: 0;
-    text-align: center;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Knödelbrot</title>
+    <link rel="icon" href="Logo.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="Logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <style>
+        /* --- exakt wie index --- */
+        body {
+            font-family: "DynaPuff", system-ui;
+            font-size: 20px;
+            margin: 0;
+            text-align: center;
+            background-color: #fff;
+        }
 
-  .profile-container {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 30px;
-    border-radius: 90px;
-    background-color: black;
-    color: whitesmoke;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-  }
+        h1 {
+            font-family: "Pacifico", cursive;
+            font-size: 46px;
+            color: black;
+            text-align: center;
+        }
 
-  h1 {
-    font-family: "Pacifico", cursive;
-    font-size: 46px;
-    margin-bottom: 20px;
-    color: black;
-  }
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 90px;
+            border: none;
+            background-color: #222;
+            color: whitesmoke;
+            font-size: 18px;
+            outline: none;
+        }
 
-  p {
-    font-size: 20px;
-  }
+        input[type="text"]:focus {
+            background-color: #333;
+        }
 
-  input[type="text"] {
-    width: 80%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 90px;
-    border: none;
-    background-color: #222;
-    color: whitesmoke;
-    font-size: 18px;
-    outline: none;
-  }
-  input[type="text"]:focus {
-    background-color: #333;
-  }
+        button {
+            color: white;
+            background-color: black;
+            font-family: "DynaPuff", system-ui;
+            font-size: 20px;
+            border: none;
+            border-radius: 90px;
+            padding: 15px 32px;
+            cursor: pointer;
+            transition-duration: 0.4s;
+            margin-top: 15px;
+        }
 
-  button {
-    color: white;
-    background-color: black;
-    font-family: "DynaPuff", system-ui;
-    font-size: 20px;
-    border: none;
-    border-radius: 90px;
-    padding: 15px 32px;
-    cursor: pointer;
-    transition-duration: 0.4s;
-    margin-top: 15px;
-  }
-  button:hover {
-    background-color: rgb(125,125,125);
-    color: black;
-  }
+        button:hover {
+            background-color: rgb(125, 125, 125);
+            color: black;
+        }
 
-  #message { color: #0f0; margin-top: 10px; }
-  #error { color: red; margin-top: 10px; }
-</style>
+        #message {
+            color: #0f0;
+            margin-top: 10px;
+        }
+
+        #error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .profile-box {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 90px;
+            background-color: black;
+            color: whitesmoke;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="profile-container">
-  <h1>Profil</h1>
-  <p>Benutzer: <span id="usernameDisplay">–</span></p>
-  <p>Aktueller Bonus: <span id="bonusDisplay">–</span></p>
+    <div id="header-placeholder"></div>
 
-  <form id="bonusForm">
-    <input type="text" id="bonusCode" placeholder="Neuen Bonuscode eingeben"><br>
-    <button type="submit">Bonuscode einlösen</button>
-  </form>
-  <div id="message"></div>
-  <div id="error"></div>
-</div>
+    <script src="header.js"></script>
+    <script>
+        fetch("header.html")
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("header-placeholder").innerHTML = html;
+                initHeader();
+                bonusAvailable();
+            });
+    </script>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-import { getBonusType } from "./bonuscodes.js"; // gleiche Funktion wie in register
+    <div class="profile-box">
+        <h1>Profil</h1>
+        <p>Benutzer: <span id="usernameDisplay">–</span></p>
+        <p>Aktueller Bonus: <span id="bonusDisplay">–</span></p>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBmnEMGPec-dzIANP0pvGT3Lbvm51zFjaY",
-  authDomain: "auth.knödelbrot.de",
-  projectId: "knödelbrot-1d1de"
-};
+        <form id="bonusForm">
+            <input type="text" id="bonusCode" placeholder="Neuen Bonuscode eingeben"><br>
+            <button type="submit">Bonuscode einlösen</button>
+        </form>
+        <div id="message"></div>
+        <div id="error"></div>
+    </div>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+        import { getBonusType } from "./bonuscodes.js";
 
-function setCookie(name, value, days = 7) {
-  const d = new Date();
-  d.setTime(d.getTime() + (days*24*60*60*1000));
-  document.cookie = `${name}=${value}; path=/; domain=.knödelbrot.de; Secure; SameSite=None; expires=${d.toUTCString()}`;
-}
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmnEMGPec-dzIANP0pvGT3Lbvm51zFjaY",
+            authDomain: "auth.knödelbrot.de",
+            projectId: "knödelbrot-1d1de"
+        };
 
-const usernameSpan = document.getElementById("usernameDisplay");
-const bonusSpan = document.getElementById("bonusDisplay");
-const messageDiv = document.getElementById("message");
-const errorDiv = document.getElementById("error");
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-// Persistent Login
-onAuthStateChanged(auth, async (user) => {
-  if(user) {
-    const username = user.email.split("@")[0];
-    usernameSpan.textContent = username;
+        function setCookie(name, value, days = 7) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value}; path=/; domain=.knödelbrot.de; Secure; SameSite=None; expires=${d.toUTCString()}`;
+        }
 
-    const docSnap = await getDoc(doc(db, "users", username));
-    let bonus = "none";
-    if(docSnap.exists()) bonus = docSnap.data().bonus;
-    bonusSpan.textContent = bonus;
+        const usernameSpan = document.getElementById("usernameDisplay");
+        const bonusSpan = document.getElementById("bonusDisplay");
+        const messageDiv = document.getElementById("message");
+        const errorDiv = document.getElementById("error");
 
-    // Cookies aktualisieren
-    setCookie("login", "1");
-    setCookie("username", username);
-    setCookie("bonus", bonus);
-  } else {
-    errorDiv.textContent = "Nicht angemeldet! Bitte zuerst einloggen.";
-  }
-});
+        // Funktion: Profil-Daten holen und Cookies setzen
+        async function refreshProfile(user) {
+            const email = getCookie("username");
+            usernameSpan.textContent = email;
 
-// Bonuscode einlösen
-document.getElementById("bonusForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const bonusCode = document.getElementById("bonusCode").value.trim();
-  if(!bonusCode) return;
+            const docSnap = await getDoc(doc(db, "users", email));
+            let bonus = "none";
+            if (docSnap.exists()) bonus = docSnap.data().bonus;
+            bonusSpan.textContent = bonus;
 
-  const user = auth.currentUser;
-  if(!user) {
-    errorDiv.textContent = "Nicht angemeldet!";
-    return;
-  }
+            setCookie("login", "1");
+            setCookie("username", email);
+            setCookie("bonus", bonus);
+        }
 
-  const username = user.email.split("@")[0];
-  const newBonus = getBonusType(bonusCode);
+        // Prüfen, ob Benutzer angemeldet ist
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await refreshProfile(user);
+            } else {
+                usernameSpan.textContent = "–";
+                bonusSpan.textContent = "–";
+                errorDiv.textContent = "Nicht angemeldet!";
+                document.cookie = "login=; path=/; domain=.knödelbrot.de; max-age=0";
+                document.cookie = "username=; path=/; domain=.knödelbrot.de; max-age=0";
+                document.cookie = "bonus=; path=/; domain=.knödelbrot.de; max-age=0";
+            }
+        });
 
-  try {
-    await updateDoc(doc(db, "users", username), { bonus: newBonus });
-    bonusSpan.textContent = newBonus;
-    setCookie("bonus", newBonus);
-    messageDiv.textContent = `✅ Bonuscode eingelöst: ${newBonus}`;
-    errorDiv.textContent = "";
-  } catch(err) {
-    console.error(err);
-    errorDiv.textContent = "Fehler beim Einlösen des Bonuscodes!";
-    messageDiv.textContent = "";
-  }
-});
-</script>
+        // Bonuscode einlösen
+        document.getElementById("bonusForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const bonusCode = document.getElementById("bonusCode").value.trim();
+            if (!bonusCode) return;
+
+            const user = auth.currentUser;
+            if (!user) {
+                errorDiv.textContent = "Nicht angemeldet!";
+                return;
+            }
+
+            const email = user.email;
+            const newBonus = getBonusType(bonusCode);
+
+            try {
+                await updateDoc(doc(db, "users", email), { bonus: newBonus });
+                bonusSpan.textContent = newBonus;
+                setCookie("bonus", newBonus);
+                messageDiv.textContent = `✅ Bonuscode eingelöst: ${newBonus}`;
+                errorDiv.textContent = "";
+            } catch (err) {
+                console.error(err);
+                errorDiv.textContent = "Fehler beim Einlösen des Bonuscodes!";
+                messageDiv.textContent = "";
+            }
+        });
+    </script>
+
 </body>
+
 </html>
