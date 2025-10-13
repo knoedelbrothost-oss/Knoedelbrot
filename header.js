@@ -30,12 +30,12 @@ function initHeader() {
 
     const loginStatus = getCookie("login");
 
-    if (loginStatus === "10") { //vorübergehende deaktivation
+    if (loginStatus === "1") {
         // Benutzer ist eingeloggt → Login-Link durch Profil ersetzen
-      loginLink.textContent = "Profil";
+        loginLink.textContent = "Profil";
         loginLink.addEventListener("click", function (e) {
             e.preventDefault();
-            window.location.href = "/profile.html";
+            window.location.href = "https://auth.knödelbrot.de/profile.html";
         });
     } else {
         // Benutzer ist nicht eingeloggt → Login-Link korrekt setzen
@@ -58,4 +58,3 @@ function initHeader() {
         menu.classList.toggle("active");
     });
 }
-
