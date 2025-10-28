@@ -1,0 +1,29 @@
+name: Auto-Merge Halloween Branch
+
+on:
+  schedule:
+    # Cron: Minute Stunde Tag Monat Wochentag (UTC!)
+    # → 31. Oktober um 00:00 UTC (1:00 MEZ)
+    - cron: '0 0 30 10 *'
+  workflow_dispatch:  # manuelles Starten erlaubt
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # alle Branches holen
+
+      - name: Merge Halloween in main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          git merge origin/halloween --no-edit
+          git push origin main
