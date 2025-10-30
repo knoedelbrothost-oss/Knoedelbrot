@@ -57,4 +57,46 @@ function initHeader() {
     menuToggle.addEventListener("click", function () {
         menu.classList.toggle("active");
     });
+
+
+    let pumpkinCount = 10; // Startanzahl der Kürbisse
+    const maxPumpkins = 300; // Maximal erlaubte Kürbisse
+
+    function createPumpkins(count) {
+        const currentPumpkins = document.querySelectorAll('.pumpkin').length;
+        const allowed = Math.min(count, maxPumpkins - currentPumpkins);
+        if (allowed <= 0) return;
+
+        for (let i = 0; i < allowed; i++) {
+            const pumpkin = document.createElement('div');
+            pumpkin.classList.add('pumpkin');
+            document.body.appendChild(pumpkin);
+
+            // zufällige Startposition
+            const startY = Math.random() * window.innerHeight;
+            const duration = 15 + Math.random() * 6; // 15–21 Sekunden
+            const size = 50 + Math.random() * 100;  // 50–150px
+            pumpkin.style.top = `${startY}px`;
+            pumpkin.style.width = `${size}px`;
+            pumpkin.style.height = `${size}px`;
+            pumpkin.style.animationDuration = `${duration}s`;
+            pumpkin.style.animationDelay = `${Math.random() * 5}s`;
+
+            // kleine sinusförmige Auf-und-ab Bewegung
+            const wobble = 50 + Math.random() * 100; // maximale Abweichung
+            pumpkin.style.setProperty('--y-wobble', `${wobble * Math.sin(Math.random() * Math.PI * 2)}px`);
+
+            pumpkin.addEventListener('click', () => {
+                createPumpkins(2);
+                pumpkinCount += 2;
+            });
+        }
+    }
+
+    createPumpkins(pumpkinCount);
+
+    setInterval(() => {
+        createPumpkins(1);
+    }, 1000);
+
 }
